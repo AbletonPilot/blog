@@ -2,8 +2,84 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
   components::{Route, Router, Routes},
-  StaticSegment,
+  path, StaticSegment,
 };
+use crate::posts::Post;
+
+#[server]
+pub async fn get_posts() -> Result<Vec<Post>, ServerFnError> {
+  Ok(crate::posts::load_posts())
+}
+
+#[server]
+pub async fn get_post_by_slug(slug: String) -> Result<Option<Post>, ServerFnError> {
+  let posts = crate::posts::load_posts();
+  Ok(posts.into_iter().find(|p| p.slug == slug))
+}
+
+#[server]
+pub async fn get_posts_by_tag(tag: String) -> Result<Vec<Post>, ServerFnError> {
+  let posts = crate::posts::load_posts();
+  Ok(posts.into_iter().filter(|p| p.metadata.tags.iter().any(|t| t == &tag)).collect())
+}
+
+#[component]
+fn SiteHeader() -> impl IntoView {
+  let is_dark = RwSignal::new(true);
+
+  let toggle_theme = move |_| {
+    is_dark.update(|dark| *dark = !*dark);
+    
+    #[cfg(target_arch = "wasm32")]
+    {
+      let win = window();
+      if let Some(document) = win.document() {
+        if let Some(body) = document.body() {
+          if is_dark.get() {
+            let _ = body.class_list().remove_1("light-mode");
+          } else {
+            let _ = body.class_list().add_1("light-mode");
+          }
+        }
+      }
+    }
+  };
+
+  view! {
+    <header class="site-header">
+      <nav class="container">
+        <div class="nav-brand">
+          <a href="/">"Junmo's Blog"</a>
+        </div>
+        <div class="nav-right">
+          <ul class="nav-links">
+            <li><a href="/">"Home"</a></li>
+            <li><a href="/about">"About"</a></li>
+          </ul>
+          <button class="theme-toggle" on:click=toggle_theme>
+            {move || if is_dark.get() { "☾" } else { "☀" }}
+          </button>
+        </div>
+      </nav>
+    </header>
+  }
+}
+
+#[component]
+fn SiteFooter() -> impl IntoView {
+  view! {
+    <footer class="site-footer">
+      <div class="container">
+        <p>"Built with Rust and Leptos"</p>
+        <div class="footer-links">
+          <a href="https://github.com" target="_blank">"GitHub"</a>
+          <span>" | "</span>
+          <a href="/rss.xml">"RSS"</a>
+        </div>
+      </div>
+    </footer>
+  }
+}
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
   view! {
@@ -33,14 +109,18 @@ pub fn App() -> impl IntoView {
     // id=leptos means cargo-leptos will hot-reload this stylesheet
     <Stylesheet id="leptos" href="/pkg/blog.css"/>
     // sets the document title
-    <Title text="Welcome to Leptos"/>
+    <Title text="Junmo's Blog"/>
     // content for this welcome page
     <Router>
+      <SiteHeader/>
       <main>
         <Routes fallback=|| "Page not found.".into_view()>
           <Route path=StaticSegment("") view=HomePage/>
+          <Route path=path!("/posts/:slug") view=PostPage/>
+          <Route path=path!("/tags/:tag") view=TagPage/>
         </Routes>
       </main>
+      <SiteFooter/>
     </Router>
   }
 }
@@ -48,12 +128,185 @@ pub fn App() -> impl IntoView {
 /// Renders the home page of your application.
 #[component]
 fn HomePage() -> impl IntoView {
-  // Creates a reactive value to update the button
-  let count = RwSignal::new(0);
-  let on_click = move |_| *count.write() += 1;
+  let posts = Resource::new(|| (), |_| async move { get_posts().await.unwrap_or_default() });
+  let search_query = RwSignal::new(String::new());
 
   view! {
-    <h1>"Welcome to Leptos!"</h1>
-    <button on:click=on_click>"Click Me: " {count}</button>
+    <div class="container">
+      <header class="blog-header">
+        <h1>"Junmo's Blog"</h1>
+        <p>"Thoughts on programming and technology"</p>
+      </header>
+
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          on:input=move |ev| {
+            search_query.set(event_target_value(&ev));
+          }
+          prop:value=move || search_query.get()
+        />
+      </div>
+
+      <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>
+        {move || {
+          posts.get().map(|posts| {
+            let query = search_query.get().to_lowercase();
+            let filtered_posts: Vec<Post> = if query.is_empty() {
+              posts
+            } else {
+              posts.into_iter().filter(|post| {
+                post.metadata.title.to_lowercase().contains(&query) ||
+                post.metadata.description.to_lowercase().contains(&query) ||
+                post.metadata.tags.iter().any(|tag| tag.to_lowercase().contains(&query)) ||
+                post.content.to_lowercase().contains(&query)
+              }).collect()
+            };
+
+            if filtered_posts.is_empty() {
+              view! {
+                <div class="no-posts">
+                  <p>"No posts found matching your search."</p>
+                </div>
+              }.into_any()
+            } else {
+              view! {
+                <div class="posts-list">
+                  {filtered_posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
+                </div>
+              }.into_any()
+            }
+          })
+        }}
+      </Suspense>
+    </div>
+  }
+}
+
+#[component]
+fn PostCard(post: Post) -> impl IntoView {
+  let slug = post.slug.clone();
+  let title = post.metadata.title.clone();
+  let date = post.metadata.date.clone();
+  let description = post.metadata.description.clone();
+  let tags = post.metadata.tags.clone();
+  
+  view! {
+    <article class="post-card">
+      <h2><a href=format!("/posts/{}", slug)>{title}</a></h2>
+      <div class="post-meta">
+        <span class="date">{date}</span>
+        <span class="tags">
+          {tags.iter().map(|tag| {
+            let tag_text = tag.clone();
+            let tag_link = tag.clone();
+            view! { 
+              <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
+            }
+          }).collect_view()}
+        </span>
+      </div>
+      <p class="description">{description}</p>
+    </article>
+  }
+}
+
+#[component]
+fn PostPage() -> impl IntoView {
+  let params = leptos_router::hooks::use_params_map();
+  let slug = move || params.read().get("slug").unwrap_or_default();
+  
+  let post = Resource::new(
+    move || slug(),
+    |slug| async move { get_post_by_slug(slug).await.ok().flatten() },
+  );
+
+  view! {
+    <div class="container">
+      <Suspense fallback=move || view! { <p>"Loading post..."</p> }>
+        {move || {
+          post.get().map(|post_opt| {
+            match post_opt {
+              Some(post) => {
+                let title = post.metadata.title.clone();
+                let date = post.metadata.date.clone();
+                let tags = post.metadata.tags.clone();
+                let content = post.content.clone();
+                
+                view! {
+                  <article class="post-detail">
+                    <header>
+                      <h1>{title}</h1>
+                      <div class="post-meta">
+                        <span class="date">{date}</span>
+                        <span class="tags">
+                          {tags.iter().map(|tag| {
+                            let tag_text = tag.clone();
+                            let tag_link = tag.clone();
+                            view! { 
+                              <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
+                            }
+                          }).collect_view()}
+                        </span>
+                      </div>
+                    </header>
+                    <div class="post-content" inner_html=content></div>
+                    <a href="/" class="back-link">"← Back to posts"</a>
+                  </article>
+                }.into_any()
+              },
+              None => view! {
+                <div class="not-found">
+                  <h1>"Post Not Found"</h1>
+                  <p>"The post you are looking for does not exist."</p>
+                  <a href="/">"← Back to posts"</a>
+                </div>
+              }.into_any(),
+            }
+          })
+        }}
+      </Suspense>
+    </div>
+  }
+}
+
+#[component]
+fn TagPage() -> impl IntoView {
+  let params = leptos_router::hooks::use_params_map();
+  let tag = move || params.read().get("tag").unwrap_or_default();
+  
+  let posts = Resource::new(
+    move || tag(),
+    |tag| async move { get_posts_by_tag(tag).await.unwrap_or_default() },
+  );
+
+  view! {
+    <div class="container">
+      <header class="tag-header">
+        <h1>"Posts tagged with: " {move || tag()}</h1>
+        <a href="/" class="back-link">"← All posts"</a>
+      </header>
+
+      <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>
+        {move || {
+          posts.get().map(|posts| {
+            if posts.is_empty() {
+              view! {
+                <div class="no-posts">
+                  <p>"No posts found with this tag."</p>
+                </div>
+              }.into_any()
+            } else {
+              view! {
+                <div class="posts-list">
+                  {posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
+                </div>
+              }.into_any()
+            }
+          })
+        }}
+      </Suspense>
+    </div>
   }
 }

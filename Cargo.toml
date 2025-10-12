@@ -15,6 +15,10 @@ leptos_axum = { version = "0.8.0", optional = true }
 leptos_meta = { version = "0.8.0" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.103", optional = true }
+pulldown-cmark = "0.11"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+syntect = { version = "5.2", optional = true }
 
 [features]
 hydrate = [
@@ -26,6 +30,7 @@ ssr = [
   "dep:axum",
   "dep:tokio",
   "dep:leptos_axum",
+  "dep:syntect",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
