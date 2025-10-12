@@ -18,17 +18,17 @@ wasm-bindgen = { version = "=0.2.103", optional = true }
 
 [features]
 hydrate = [
-    "leptos/hydrate",
-    "dep:console_error_panic_hook",
-    "dep:wasm-bindgen",
+  "leptos/hydrate",
+  "dep:console_error_panic_hook",
+  "dep:wasm-bindgen",
 ]
 ssr = [
-    "dep:axum",
-    "dep:tokio",
-    "dep:leptos_axum",
-    "leptos/ssr",
-    "leptos_meta/ssr",
-    "leptos_router/ssr",
+  "dep:axum",
+  "dep:tokio",
+  "dep:leptos_axum",
+  "leptos/ssr",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
