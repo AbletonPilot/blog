@@ -36,11 +36,11 @@
 - [x] Implement tag system
 - [x] Create tag filter page
 - [x] Add client-side search functionality
-  - Search by post title
-  - Search by post content
-  - Search by tags
-  - Display search results in real-time
-- [ ] Implement pagination for post list
+  - [x] Search by post title
+  - [x] Search by post content
+  - [x] Search by tags
+  - [x] Display search results in real-time
+- [x] Implement pagination for posts (10 posts per page)
 - [x] Add syntax highlighting for code blocks
 - [x] Support for images in markdown posts
 

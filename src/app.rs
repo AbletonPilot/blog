@@ -130,6 +130,8 @@ pub fn App() -> impl IntoView {
 fn HomePage() -> impl IntoView {
   let posts = Resource::new(|| (), |_| async move { get_posts().await.unwrap_or_default() });
   let search_query = RwSignal::new(String::new());
+  let current_page = RwSignal::new(1);
+  let posts_per_page = 10;
 
   view! {
     <div class="container">
@@ -138,12 +140,13 @@ fn HomePage() -> impl IntoView {
         <p>"Thoughts on programming and technology"</p>
       </header>
 
-      <div class="search-box">
+      <div class="search">
         <input
           type="text"
           placeholder="Search posts..."
           on:input=move |ev| {
             search_query.set(event_target_value(&ev));
+            current_page.set(1);
           }
           prop:value=move || search_query.get()
         />
@@ -171,10 +174,41 @@ fn HomePage() -> impl IntoView {
                 </div>
               }.into_any()
             } else {
+              let total_posts = filtered_posts.len();
+              let total_pages = (total_posts + posts_per_page - 1) / posts_per_page;
+              let current = current_page.get();
+              let start_idx = (current - 1) * posts_per_page;
+              let paginated_posts: Vec<Post> = filtered_posts.into_iter().skip(start_idx).take(posts_per_page).collect();
+
               view! {
                 <div class="posts-list">
-                  {filtered_posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
+                  {paginated_posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
                 </div>
+                {if total_pages > 1 {
+                  view! {
+                    <div class="pagination">
+                      <button
+                        class="pagination-btn"
+                        disabled=move || current_page.get() == 1
+                        on:click=move |_| current_page.update(|p| *p = (*p - 1).max(1))
+                      >
+                        "Previous"
+                      </button>
+                      <span class="pagination-info">
+                        {format!("Page {} of {}", current, total_pages)}
+                      </span>
+                      <button
+                        class="pagination-btn"
+                        disabled=move || current_page.get() >= total_pages
+                        on:click=move |_| current_page.update(|p| *p = (*p + 1).min(total_pages))
+                      >
+                        "Next"
+                      </button>
+                    </div>
+                  }.into_any()
+                } else {
+                  view! { <div></div> }.into_any()
+                }}
               }.into_any()
             }
           })

@@ -136,7 +136,7 @@ main {
   }
 }
 
-.search-box {
+.search {
   margin-bottom: 2rem;
 
   input {
@@ -413,6 +413,42 @@ main {
   text-align: center;
   padding: 3rem 0;
   color: var(--text-secondary);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+
+  .pagination-btn {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .pagination-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
 }
 
 .not-found {
