@@ -54,9 +54,54 @@ pub async fn get_posts_by_tag(tag: String) -> Result<Vec<Post>, ServerFnError> {
 
 #[component]
 fn SiteHeader() -> impl IntoView {
-  let is_dark = RwSignal::new(true);
+  // Detect system theme preference
+  let initial_dark = {
+    #[cfg(target_arch = "wasm32")]
+    {
+      let win = window();
+      let prefers_dark = win
+        .match_media("(prefers-color-scheme: dark)")
+        .ok()
+        .flatten()
+        .map(|mql| mql.matches())
+        .unwrap_or(true);
+
+      // Check localStorage first (user preference)
+      if let Some(storage) = win.local_storage().ok().flatten() {
+        if let Ok(Some(theme)) = storage.get_item("theme") {
+          theme == "dark"
+        } else {
+          prefers_dark
+        }
+      } else {
+        prefers_dark
+      }
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+      true // SSR default to dark
+    }
+  };
+
+  let is_dark = RwSignal::new(initial_dark);
   let search_ctx = expect_context::<SearchContext>();
   let navigate = leptos_router::hooks::use_navigate();
+
+  // Apply initial theme on mount
+  #[cfg(target_arch = "wasm32")]
+  {
+    use leptos::prelude::Effect;
+    Effect::new(move || {
+      let win = window();
+      if let Some(document) = win.document() {
+        if let Some(body) = document.body() {
+          if !is_dark.get() {
+            let _ = body.class_list().add_1("light-mode");
+          }
+        }
+      }
+    });
+  }
 
   let toggle_theme = move |_| {
     is_dark.update(|dark| *dark = !*dark);
@@ -72,6 +117,12 @@ fn SiteHeader() -> impl IntoView {
             let _ = body.class_list().add_1("light-mode");
           }
         }
+      }
+
+      // Save theme to localStorage
+      if let Some(storage) = win.local_storage().ok().flatten() {
+        let theme = if is_dark.get() { "dark" } else { "light" };
+        let _ = storage.set_item("theme", theme);
       }
     }
   };
@@ -249,7 +300,15 @@ pub fn App() -> impl IntoView {
     <Router>
       <SiteHeader/>
       <main>
-        <Routes fallback=|| "Page not found.".into_view()>
+        <Routes fallback=|| view! {
+          <div class="container">
+            <div class="not-found">
+              <h1>"404"</h1>
+              <p>"Page not found."</p>
+              <a href="/">"← Back to home"</a>
+            </div>
+          </div>
+        }.into_view()>
           <Route path=StaticSegment("") view=HomePage/>
           <Route path=StaticSegment("archive") view=ArchivePage/>
           <Route path=StaticSegment("about") view=AboutPage/>

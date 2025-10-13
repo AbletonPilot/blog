@@ -95,17 +95,7 @@
 - [ ] Set up CI/CD pipeline with GitHub Actions (optional)
 - [ ] Plan content creation schedule
 
-## Optional Enhancements
-
-- [ ] Add related posts feature
-- [ ] Create about page
-- [ ] Add contact form
-- [ ] Support multiple authors
-- [ ] Add reading time estimate
-- [ ] Create archive page by date
-- [ ] Implement analytics (privacy-focused)
-
-## Phase 9: GitHub Comments Integration (Giscus)
+## Phase 9: GitHub Comments Integration (Giscus) ✅
 
 ### Setup GitHub Discussions
 - [x] Enable GitHub Discussions in repository settings
@@ -143,6 +133,32 @@
 - [x] Verify comments appear in GitHub Discussions
 - [ ] Set up moderation guidelines if needed
 - [ ] Document comment system for users
+
+## Phase 10: UI/UX Enhancements ✅
+
+### Homepage Header Redesign
+- [x] Add welcome message with emoji animation
+- [x] Implement gradient title effect
+- [x] Add social media icon links (GitHub, LinkedIn, Ko-fi)
+- [x] Center-align header layout
+- [x] Add hover effects to social icons (color + glow, no motion)
+- [x] Optimize icon sizes and alignment
+
+### Global Search Improvements
+- [x] Move search from HomePage to SiteHeader
+- [x] Create global SearchContext for state management
+- [x] Auto-navigate to homepage when searching from other pages
+- [x] Maintain search state across navigation
+
+### RSS/Footer Improvements
+- [x] Move RSS/Sitemap/Robots to Axum backend routes
+- [x] Add proper Content-Type headers (application/rss+xml, etc.)
+- [x] Remove RSS from footer (keep link in HTML head)
+- [x] Add Ko-fi donation link to footer
+- [x] Simplify footer to single-line layout
+
+### Archive Page
+- [x] Fix archive icon size alignment (36px desktop, 28px mobile)
 
 ## Notes
 

@@ -69,7 +69,8 @@ pub fn AboutPage() -> impl IntoView {
                or just say hello!"</p>
             <div class="social-links">
               <a href="https://github.com/AbletonPilot" target="_blank" rel="noopener noreferrer">"GitHub"</a>
-              <a href="/rss.xml">"RSS Feed"</a>
+              <a href="https://www.linkedin.com/in/junmo-son-46093a1b9/" target="_blank" rel="noopener noreferrer">"LinkedIn"</a>
+              <a href="https://ko-fi.com/abletonpilot" target="_blank" rel="noopener noreferrer">"Ko-fi"</a>
             </div>
           </section>
         </div>

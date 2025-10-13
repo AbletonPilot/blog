@@ -15,7 +15,7 @@ leptos_axum = { version = "0.8.0", optional = true }
 leptos_meta = { version = "0.8.0" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.103", optional = true }
-web-sys = { version = "0.3", features = ["HtmlIFrameElement", "Window", "MessageEvent", "MutationObserver", "MutationObserverInit"], optional = true }
+web-sys = { version = "0.3", features = ["HtmlIFrameElement", "Window", "MessageEvent", "MutationObserver", "MutationObserverInit", "MediaQueryList", "Storage"], optional = true }
 js-sys = { version = "0.3", optional = true }
 pulldown-cmark = "0.11"
 serde = { version = "1.0", features = ["derive"] }

@@ -53,6 +53,10 @@ fn markdown_to_html(markdown: &str) -> String {
   options.insert(Options::ENABLE_TABLES);
   options.insert(Options::ENABLE_FOOTNOTES);
   options.insert(Options::ENABLE_TASKLISTS);
+  options.insert(Options::ENABLE_HEADING_ATTRIBUTES);
+  options.insert(Options::ENABLE_SMART_PUNCTUATION);
+  options.insert(Options::ENABLE_PLUSES_DELIMITED_METADATA_BLOCKS);
+  options.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
 
   #[cfg(feature = "ssr")]
   {
@@ -64,7 +68,8 @@ fn markdown_to_html(markdown: &str) -> String {
     let parser = Parser::new_ext(markdown, options);
     let ss = SyntaxSet::load_defaults_newlines();
     let ts = ThemeSet::load_defaults();
-    let theme = &ts.themes["base16-ocean.dark"];
+    // Use a neutral theme that works in both light and dark modes // base16-ocean.dark, base16-ocean.light, InspiredGitHub, Solarized (dark), Solarized (light)
+    let _theme = &ts.themes["Solarized (dark)"];
 
     let mut in_code_block = false;
     let mut code_block_lang = String::new();
@@ -83,14 +88,61 @@ fn markdown_to_html(markdown: &str) -> String {
           let syntax = ss
             .find_syntax_by_token(&code_block_lang)
             .unwrap_or_else(|| ss.find_syntax_plain_text());
-          let html = highlighted_html_for_string(&code_block_content, &ss, syntax, theme)
+
+          // Generate dark theme version // base16-ocean.dark, base16-ocean.light, InspiredGitHub, Solarized (dark), Solarized (light)
+          let dark_theme = &ts.themes["Solarized (dark)"];
+          let mut dark_html = highlighted_html_for_string(&code_block_content, &ss, syntax, dark_theme)
             .unwrap_or_else(|_| format!("<pre><code>{}</code></pre>", code_block_content));
-          Some(Event::Html(html.into()))
+          dark_html = dark_html.replace(
+            r#"<pre style="background-color:"#,
+            r#"<pre class="code-dark" style="padding:1rem;border-radius:8px;overflow-x:auto;background-color:"#,
+          );
+
+          // Generate light theme version // base16-ocean.dark, base16-ocean.light, InspiredGitHub, Solarized (dark), Solarized (light)
+          let light_theme = &ts.themes["Solarized (light)"];
+          let mut light_html = highlighted_html_for_string(&code_block_content, &ss, syntax, light_theme)
+            .unwrap_or_else(|_| format!("<pre><code>{}</code></pre>", code_block_content));
+          light_html = light_html.replace(
+            r#"<pre style="background-color:"#,
+            r#"<pre class="code-light" style="padding:1rem;border-radius:8px;overflow-x:auto;background-color:"#,
+          );
+          
+          // Combine both versions
+          let combined_html = format!("{}{}", dark_html, light_html);
+          Some(Event::Html(combined_html.into()))
         }
         Event::Text(text) if in_code_block => {
           code_block_content.push_str(&text);
           None
         }
+        // Add target="_blank" and rel attributes to external links
+        Event::Start(Tag::Link {
+          link_type,
+          dest_url,
+          title,
+          id,
+        }) => {
+          if dest_url.starts_with("http://") || dest_url.starts_with("https://") {
+            let modified_html = format!(
+              r#"<a href="{}" target="_blank" rel="noopener noreferrer"{}>"#,
+              dest_url,
+              if title.is_empty() {
+                String::new()
+              } else {
+                format!(r#" title="{}""#, title)
+              }
+            );
+            Some(Event::Html(modified_html.into()))
+          } else {
+            Some(Event::Start(Tag::Link {
+              link_type,
+              dest_url,
+              title,
+              id,
+            }))
+          }
+        }
+        Event::End(TagEnd::Link) => Some(Event::Html("</a>".into())),
         _ => Some(event),
       })
       .collect();
