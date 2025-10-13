@@ -5,41 +5,72 @@ tags: [rust, tutorial, beginner]
 description: "A beginner's guide to Rust programming"
 ---
 
-# Getting Started with Rust
+# Markdown syntax guide
 
-Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.
+## Headers
 
-## Installation
+# This is a Heading h1
+## This is a Heading h2
+###### This is a Heading h6
 
-To install Rust, run:
+## Emphasis
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+*This text will be italic*  
+_This will also be italic_
+
+**This text will be bold**  
+__This will also be bold__
+
+_You **can** combine them_
+
+## Lists
+
+### Unordered
+
+* Item 1
+* Item 2
+* Item 2a
+* Item 2b
+    * Item 3a
+    * Item 3b
+
+### Ordered
+
+1. Item 1
+2. Item 2
+3. Item 3
+    1. Item 3a
+    2. Item 3b
+
+## Images
+
+![This is an alt text.](/public/2025-10-12/2025-10-12-1.png "This is a sample image.")
+
+## Links
+
+You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
+
+## Blockquotes
+
+> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
+>
+>> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
+
+## Tables
+
+| Left columns  | Right columns |
+| ------------- |:-------------:|
+| left foo      | right foo     |
+| left bar      | right bar     |
+| left baz      | right baz     |
+
+## Blocks of code
+
+```
+let message = 'Hello world';
+alert(message);
 ```
 
-## Your First Program
+## Inline code
 
-Create a new file called `main.rs`:
-
-```rust
-fn main() {
-    println!("Hello, Rust!");
-}
-```
-
-Compile and run:
-
-```bash
-rustc main.rs
-./main
-```
-
-## Key Features
-
-- **Memory Safety**: No null pointers or data races
-- **Zero-Cost Abstractions**: High-level features without runtime overhead
-- **Ownership System**: Unique approach to memory management
-
-## Next Steps
-
-Stay tuned for more Rust tutorials!
+This web site is using `markedjs/marked`.
