@@ -231,6 +231,7 @@ dependencies = [
  "syntect",
  "tokio",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

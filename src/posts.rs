@@ -15,6 +15,12 @@ pub struct Post {
   pub content: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct PostSummary {
+  pub slug: String,
+  pub metadata: PostMetadata,
+}
+
 impl Post {
   pub fn from_markdown(slug: String, markdown_content: &str) -> Result<Self, String> {
     let parts: Vec<&str> = markdown_content.split("---").collect();
@@ -107,6 +113,16 @@ fn markdown_to_html(markdown: &str) -> String {
 pub fn load_posts() -> Vec<Post> {
   use std::fs;
   use std::path::Path;
+  use std::sync::{LazyLock, Mutex};
+
+  static POSTS_CACHE: LazyLock<Mutex<Option<Vec<Post>>>> = LazyLock::new(|| Mutex::new(None));
+
+  // Check if posts are already cached
+  if let Ok(cache) = POSTS_CACHE.lock() {
+    if let Some(ref cached_posts) = *cache {
+      return cached_posts.clone();
+    }
+  }
 
   let posts_dir = Path::new("posts");
 
@@ -139,10 +155,27 @@ pub fn load_posts() -> Vec<Post> {
   }
 
   posts.sort_by(|a, b| b.metadata.date.cmp(&a.metadata.date));
+
+  // Cache the posts
+  if let Ok(mut cache) = POSTS_CACHE.lock() {
+    *cache = Some(posts.clone());
+  }
+
   posts
 }
 
+#[cfg(feature = "ssr")]
+pub fn load_post_summaries() -> Vec<PostSummary> {
+  load_posts()
+    .into_iter()
+    .map(|post| PostSummary {
+      slug: post.slug,
+      metadata: post.metadata,
+    })
+    .collect()
+}
+
 #[cfg(not(feature = "ssr"))]
-pub fn load_posts() -> Vec<Post> {
+pub fn load_post_summaries() -> Vec<PostSummary> {
   vec![]
 }

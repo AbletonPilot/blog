@@ -1,5 +1,8 @@
 pub mod app;
+pub mod performance;
 pub mod posts;
+pub mod rss;
+pub mod sitemap;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

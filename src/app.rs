@@ -1,10 +1,43 @@
+use crate::posts::{Post, PostSummary};
 use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, Link, Meta, MetaTags, Stylesheet, Title};
+use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
 use leptos_router::{
   components::{Route, Router, Routes},
   path, StaticSegment,
 };
-use crate::posts::Post;
+
+#[server]
+pub async fn get_post_summaries() -> Result<Vec<PostSummary>, ServerFnError> {
+  Ok(crate::posts::load_post_summaries())
+}
+
+#[server]
+pub async fn get_posts_by_tag_summaries(tag: String) -> Result<Vec<PostSummary>, ServerFnError> {
+  let posts = crate::posts::load_post_summaries();
+  Ok(
+    posts
+      .into_iter()
+      .filter(|p| p.metadata.tags.iter().any(|t| t == &tag))
+      .collect(),
+  )
+}
+
+#[server]
+pub async fn get_rss() -> Result<String, ServerFnError> {
+  let posts = crate::posts::load_posts();
+  Ok(crate::rss::generate_rss(&posts))
+}
+
+#[server]
+pub async fn get_sitemap() -> Result<String, ServerFnError> {
+  let posts = crate::posts::load_posts();
+  Ok(crate::sitemap::generate_sitemap(&posts))
+}
+
+#[server]
+pub async fn get_robots_txt() -> Result<String, ServerFnError> {
+  Ok(crate::sitemap::generate_robots_txt())
+}
 
 #[server]
 pub async fn get_posts() -> Result<Vec<Post>, ServerFnError> {
@@ -20,7 +53,12 @@ pub async fn get_post_by_slug(slug: String) -> Result<Option<Post>, ServerFnErro
 #[server]
 pub async fn get_posts_by_tag(tag: String) -> Result<Vec<Post>, ServerFnError> {
   let posts = crate::posts::load_posts();
-  Ok(posts.into_iter().filter(|p| p.metadata.tags.iter().any(|t| t == &tag)).collect())
+  Ok(
+    posts
+      .into_iter()
+      .filter(|p| p.metadata.tags.iter().any(|t| t == &tag))
+      .collect(),
+  )
 }
 
 #[component]
@@ -29,7 +67,7 @@ fn SiteHeader() -> impl IntoView {
 
   let toggle_theme = move |_| {
     is_dark.update(|dark| *dark = !*dark);
-    
+
     #[cfg(target_arch = "wasm32")]
     {
       let win = window();
@@ -57,34 +95,34 @@ fn SiteHeader() -> impl IntoView {
             <li><a href="/about">"About"</a></li>
           </ul>
           <button class="theme-toggle" on:click=toggle_theme>
-            {move || if is_dark.get() { 
+            {move || if is_dark.get() {
               view! {
-                <svg 
-                  id="moon" 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  stroke-linecap="round" 
+                <svg
+                  id="moon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
                   stroke-linejoin="round"
                 >
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-              }.into_view() } else { 
+              }.into_any() } else {
                 view! {
-                  <svg 
-                    id="sun" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    stroke-width="2" 
-                    stroke-linecap="round" 
+                  <svg
+                    id="sun"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
                     stroke-linejoin="round"
                   >
                     <circle cx="12" cy="12" r="5"></circle>
@@ -97,7 +135,7 @@ fn SiteHeader() -> impl IntoView {
                     <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                   </svg>
-                }.into_view()
+                }.into_any()
               }
             }
           </button>
@@ -130,6 +168,9 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
       <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+        <link rel="dns-prefetch" href="https://blog.abletonpilot.me"/>
         <AutoReload options=options.clone() />
         <HydrationScripts options/>
         <MetaTags/>
@@ -160,6 +201,9 @@ pub fn App() -> impl IntoView {
           <Route path=StaticSegment("") view=HomePage/>
           <Route path=path!("/posts/:slug") view=PostPage/>
           <Route path=path!("/tags/:tag") view=TagPage/>
+          <Route path=StaticSegment("sitemap.xml") view=SitemapPage/>
+          <Route path=StaticSegment("robots.txt") view=RobotsPage/>
+          <Route path=StaticSegment("rss.xml") view=RssPage/>
         </Routes>
       </main>
       <SiteFooter/>
@@ -170,12 +214,29 @@ pub fn App() -> impl IntoView {
 /// Renders the home page of your application.
 #[component]
 fn HomePage() -> impl IntoView {
-  let posts = Resource::new(|| (), |_| async move { get_posts().await.unwrap_or_default() });
+  let posts = Resource::new(
+    || (),
+    |_| async move { get_post_summaries().await.unwrap_or_default() },
+  );
   let search_query = RwSignal::new(String::new());
   let current_page = RwSignal::new(1);
   let posts_per_page = 10;
 
   view! {
+    <Title text="Junmo's Blog - Thoughts on programming and technology"/>
+    <Meta name="description" content="A blog about programming, technology, and software development. Sharing insights and experiences in web development, Rust, and more."/>
+    <Meta name="keywords" content="programming, technology, software development, rust, web development, leptos"/>
+    <Meta property="og:type" content="website"/>
+    <Meta property="og:title" content="Junmo's Blog"/>
+    <Meta property="og:description" content="A blog about programming, technology, and software development"/>
+    <Meta property="og:url" content="https://blog.ableton.me/"/>
+    <Meta property="og:site_name" content="Junmo's Blog"/>
+    <Meta name="twitter:card" content="summary"/>
+    <Meta name="twitter:title" content="Junmo's Blog"/>
+    <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
+    <link rel="canonical" href="https://blog.ableton.me/"/>
+
+
     <div class="container">
       <header class="blog-header">
         <h1>"Junmo's Blog"</h1>
@@ -198,14 +259,13 @@ fn HomePage() -> impl IntoView {
         {move || {
           posts.get().map(|posts| {
             let query = search_query.get().to_lowercase();
-            let filtered_posts: Vec<Post> = if query.is_empty() {
+            let filtered_posts: Vec<PostSummary> = if query.is_empty() {
               posts
             } else {
               posts.into_iter().filter(|post| {
                 post.metadata.title.to_lowercase().contains(&query) ||
                 post.metadata.description.to_lowercase().contains(&query) ||
-                post.metadata.tags.iter().any(|tag| tag.to_lowercase().contains(&query)) ||
-                post.content.to_lowercase().contains(&query)
+                post.metadata.tags.iter().any(|tag| tag.to_lowercase().contains(&query))
               }).collect()
             };
 
@@ -220,11 +280,11 @@ fn HomePage() -> impl IntoView {
               let total_pages = (total_posts + posts_per_page - 1) / posts_per_page;
               let current = current_page.get();
               let start_idx = (current - 1) * posts_per_page;
-              let paginated_posts: Vec<Post> = filtered_posts.into_iter().skip(start_idx).take(posts_per_page).collect();
+              let paginated_posts: Vec<PostSummary> = filtered_posts.into_iter().skip(start_idx).take(posts_per_page).collect();
 
               view! {
                 <div class="posts-list">
-                  {paginated_posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
+                  {paginated_posts.iter().map(|post| view! { <PostSummaryCard post=post.clone() /> }).collect_view()}
                 </div>
                 {if total_pages > 1 {
                   view! {
@@ -261,13 +321,13 @@ fn HomePage() -> impl IntoView {
 }
 
 #[component]
-fn PostCard(post: Post) -> impl IntoView {
+fn PostSummaryCard(post: PostSummary) -> impl IntoView {
   let slug = post.slug.clone();
   let title = post.metadata.title.clone();
   let date = post.metadata.date.clone();
   let description = post.metadata.description.clone();
   let tags = post.metadata.tags.clone();
-  
+
   view! {
     <article class="post-card">
       <h2><a href=format!("/posts/{}", slug)>{title}</a></h2>
@@ -277,7 +337,7 @@ fn PostCard(post: Post) -> impl IntoView {
           {tags.iter().map(|tag| {
             let tag_text = tag.clone();
             let tag_link = tag.clone();
-            view! { 
+            view! {
               <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
             }
           }).collect_view()}
@@ -292,7 +352,7 @@ fn PostCard(post: Post) -> impl IntoView {
 fn PostPage() -> impl IntoView {
   let params = leptos_router::hooks::use_params_map();
   let slug = move || params.read().get("slug").unwrap_or_default();
-  
+
   let post = Resource::new(
     move || slug(),
     |slug| async move { get_post_by_slug(slug).await.ok().flatten() },
@@ -309,8 +369,27 @@ fn PostPage() -> impl IntoView {
                 let date = post.metadata.date.clone();
                 let tags = post.metadata.tags.clone();
                 let content = post.content.clone();
-                
+                let description = post.metadata.description.clone();
+                let page_title = format!("{} - Junmo's Blog", title);
+                let og_url = format!("https://blog.ableton.me/posts/{}", post.slug);
+
                 view! {
+                  <Title text=page_title.clone()/>
+                  <Meta name="description" content=description.clone()/>
+                  <Meta name="keywords" content=tags.join(", ")/>
+                  <Meta property="og:type" content="article"/>
+                  <Meta property="og:title" content=title.clone()/>
+                  <Meta property="og:description" content=description.clone()/>
+                  <Meta property="og:url" content=og_url.clone()/>
+                  <Meta property="og:site_name" content="Junmo's Blog"/>
+                  <Meta property="article:published_time" content=date.clone()/>
+                  <Meta property="article:author" content="Junmo"/>
+                  <Meta property="article:tag" content=tags.join(", ")/>
+                  <Meta name="twitter:card" content="summary"/>
+                  <Meta name="twitter:title" content=title.clone()/>
+                  <Meta name="twitter:description" content=description/>
+                  <Meta name="twitter:url" content=og_url/>
+
                   <article class="post-detail">
                     <header>
                       <h1>{title}</h1>
@@ -320,7 +399,7 @@ fn PostPage() -> impl IntoView {
                           {tags.iter().map(|tag| {
                             let tag_text = tag.clone();
                             let tag_link = tag.clone();
-                            view! { 
+                            view! {
                               <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
                             }
                           }).collect_view()}
@@ -333,6 +412,9 @@ fn PostPage() -> impl IntoView {
                 }.into_any()
               },
               None => view! {
+                <Title text="Post Not Found - Junmo's Blog"/>
+                <Meta name="description" content="The requested blog post could not be found"/>
+
                 <div class="not-found">
                   <h1>"Post Not Found"</h1>
                   <p>"The post you are looking for does not exist."</p>
@@ -351,13 +433,32 @@ fn PostPage() -> impl IntoView {
 fn TagPage() -> impl IntoView {
   let params = leptos_router::hooks::use_params_map();
   let tag = move || params.read().get("tag").unwrap_or_default();
-  
+
   let posts = Resource::new(
     move || tag(),
-    |tag| async move { get_posts_by_tag(tag).await.unwrap_or_default() },
+    |tag| async move { get_posts_by_tag_summaries(tag).await.unwrap_or_default() },
   );
 
   view! {
+    {move || {
+      let current_tag = tag();
+      let page_title = format!("Posts tagged with '{}' - Junmo's Blog", current_tag);
+      let description = format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag);
+
+      view! {
+        <Title text=page_title/>
+        <Meta name="description" content=description/>
+        <Meta name="keywords" content=format!("{}, programming, technology", current_tag)/>
+        <Meta property="og:type" content="website"/>
+        <Meta property="og:title" content=format!("Posts tagged with '{}'", current_tag)/>
+        <Meta property="og:description" content=format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag)/>
+        <Meta property="og:site_name" content="Junmo's Blog"/>
+        <Meta name="twitter:card" content="summary"/>
+        <Meta name="twitter:title" content=format!("Posts tagged with '{}'", current_tag)/>
+        <Meta name="twitter:description" content=format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag)/>
+      }
+    }}
+
     <div class="container">
       <header class="tag-header">
         <h1>"Posts tagged with: " {move || tag()}</h1>
@@ -376,7 +477,7 @@ fn TagPage() -> impl IntoView {
             } else {
               view! {
                 <div class="posts-list">
-                  {posts.iter().map(|post| view! { <PostCard post=post.clone() /> }).collect_view()}
+                  {posts.iter().map(|post| view! { <PostSummaryCard post=post.clone() /> }).collect_view()}
                 </div>
               }.into_any()
             }
@@ -384,5 +485,71 @@ fn TagPage() -> impl IntoView {
         }}
       </Suspense>
     </div>
+  }
+}
+
+#[component]
+fn SitemapPage() -> impl IntoView {
+  let sitemap = Resource::new(
+    || (),
+    |_| async move { get_sitemap().await.unwrap_or_default() },
+  );
+
+  view! {
+    <Suspense fallback=move || view! { <p>"Generating sitemap..."</p> }>
+      {move || {
+        sitemap.get().map(|content| {
+          view! {
+            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
+              {content}
+            </div>
+          }
+        })
+      }}
+    </Suspense>
+  }
+}
+
+#[component]
+fn RobotsPage() -> impl IntoView {
+  let robots = Resource::new(
+    || (),
+    |_| async move { get_robots_txt().await.unwrap_or_default() },
+  );
+
+  view! {
+    <Suspense fallback=move || view! { <p>"Generating robots.txt..."</p> }>
+      {move || {
+        robots.get().map(|content| {
+          view! {
+            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
+              {content}
+            </div>
+          }
+        })
+      }}
+    </Suspense>
+  }
+}
+
+#[component]
+fn RssPage() -> impl IntoView {
+  let rss = Resource::new(
+    || (),
+    |_| async move { get_rss().await.unwrap_or_default() },
+  );
+
+  view! {
+    <Suspense fallback=move || view! { <p>"Generating RSS feed..."</p> }>
+      {move || {
+        rss.get().map(|content| {
+          view! {
+            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
+              {content}
+            </div>
+          }
+        })
+      }}
+    </Suspense>
   }
 }
