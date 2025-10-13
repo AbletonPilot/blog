@@ -108,30 +108,39 @@
 ## Phase 9: GitHub Comments Integration (Giscus)
 
 ### Setup GitHub Discussions
-- [ ] Enable GitHub Discussions in repository settings
-- [ ] Create Announcements category for blog comments
-- [ ] Configure discussion settings and permissions
+- [x] Enable GitHub Discussions in repository settings
+- [x] Create Announcements category for blog comments
+- [x] Configure discussion settings and permissions
+- [x] Change to General category for public commenting
 
 ### Configure Giscus
-- [ ] Visit https://giscus.app
-- [ ] Configure repository (AbletonPilot/blog)
-- [ ] Select discussion category (Announcements)
-- [ ] Choose mapping method (pathname recommended)
-- [ ] Select theme (preferred_color_scheme for auto dark mode)
-- [ ] Set language to Korean
-- [ ] Copy generated script configuration
+- [x] Visit https://giscus.app
+- [x] Configure repository (AbletonPilot/blog)
+- [x] Select discussion category (General)
+- [x] Choose mapping method (pathname)
+- [x] Select theme (noborder_light/noborder_dark)
+- [x] Set language to English
+- [x] Copy generated script configuration
+- [x] Disable reactions display
 
 ### Integrate into Leptos
 - [x] Create Giscus component in src/components/giscus.rs
 - [x] Add script loading logic for client-side rendering
 - [x] Include Giscus component in post detail page
-- [ ] Test comments functionality in development
-- [ ] Verify dark mode theme switching works
-- [ ] Test on mobile devices
+- [x] Update repo-id and category-id with actual values
+- [x] Fix component mounting on page navigation
+- [x] Set language to English
+- [x] Implement dynamic theme switching (dark/light mode)
+- [x] Add MutationObserver for theme change detection
+- [x] Fix deprecated web-sys API warnings
+- [x] Remove debug logging
+- [x] Test comments functionality in development
+- [x] Verify dark mode theme switching works
+- [x] Test on mobile devices
 
 ### Post-Integration
-- [ ] Test commenting as different GitHub users
-- [ ] Verify comments appear in GitHub Discussions
+- [x] Test commenting as different GitHub users
+- [x] Verify comments appear in GitHub Discussions
 - [ ] Set up moderation guidelines if needed
 - [ ] Document comment system for users
 

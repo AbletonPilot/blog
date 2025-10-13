@@ -7,6 +7,13 @@ use leptos_router::{
   path, StaticSegment,
 };
 
+// Global search context
+#[derive(Clone, Copy)]
+pub struct SearchContext {
+  pub query: RwSignal<String>,
+  pub current_page: RwSignal<usize>,
+}
+
 #[server]
 pub async fn get_post_summaries() -> Result<Vec<PostSummary>, ServerFnError> {
   Ok(crate::posts::load_post_summaries())
@@ -21,23 +28,6 @@ pub async fn get_posts_by_tag_summaries(tag: String) -> Result<Vec<PostSummary>,
       .filter(|p| p.metadata.tags.iter().any(|t| t == &tag))
       .collect(),
   )
-}
-
-#[server]
-pub async fn get_rss() -> Result<String, ServerFnError> {
-  let posts = crate::posts::load_posts();
-  Ok(crate::rss::generate_rss(&posts))
-}
-
-#[server]
-pub async fn get_sitemap() -> Result<String, ServerFnError> {
-  let posts = crate::posts::load_posts();
-  Ok(crate::sitemap::generate_sitemap(&posts))
-}
-
-#[server]
-pub async fn get_robots_txt() -> Result<String, ServerFnError> {
-  Ok(crate::sitemap::generate_robots_txt())
 }
 
 #[server]
@@ -65,6 +55,8 @@ pub async fn get_posts_by_tag(tag: String) -> Result<Vec<Post>, ServerFnError> {
 #[component]
 fn SiteHeader() -> impl IntoView {
   let is_dark = RwSignal::new(true);
+  let search_ctx = expect_context::<SearchContext>();
+  let navigate = leptos_router::hooks::use_navigate();
 
   let toggle_theme = move |_| {
     is_dark.update(|dark| *dark = !*dark);
@@ -106,6 +98,13 @@ fn SiteHeader() -> impl IntoView {
               type="text"
               placeholder="Search..."
               class="search-input"
+              on:input=move |ev| {
+                search_ctx.query.set(event_target_value(&ev));
+                search_ctx.current_page.set(1);
+                // Navigate to home page when searching from other pages
+                navigate("/", Default::default());
+              }
+              prop:value=move || search_ctx.query.get()
             />
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
@@ -189,8 +188,6 @@ fn SiteFooter() -> impl IntoView {
         <p>"Built with Rust and Leptos"</p>
         <div class="footer-links">
           <a href="https://github.com/AbletonPilot" target="_blank">"GitHub"</a>
-          <span>" | "</span>
-          <a href="/rss.xml">"RSS"</a>
         </div>
       </div>
     </footer>
@@ -207,6 +204,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
         <link rel="dns-prefetch" href="https://blog.abletonpilot.me"/>
+        <link rel="alternate" type="application/rss+xml" title="Junmo's Blog RSS Feed" href="/rss.xml"/>
         <AutoReload options=options.clone() />
         <HydrationScripts options/>
         <MetaTags/>
@@ -222,6 +220,13 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 pub fn App() -> impl IntoView {
   // Provides context that manages stylesheets, titles, meta tags, etc.
   provide_meta_context();
+
+  // Provide global search context
+  let search_ctx = SearchContext {
+    query: RwSignal::new(String::new()),
+    current_page: RwSignal::new(1),
+  };
+  provide_context(search_ctx);
 
   view! {
     // injects a stylesheet into the document <head>
@@ -239,9 +244,6 @@ pub fn App() -> impl IntoView {
           <Route path=StaticSegment("about") view=AboutPage/>
           <Route path=path!("/posts/:slug") view=PostPage/>
           <Route path=path!("/tags/:tag") view=TagPage/>
-          <Route path=StaticSegment("sitemap.xml") view=SitemapPage/>
-          <Route path=StaticSegment("robots.txt") view=RobotsPage/>
-          <Route path=StaticSegment("rss.xml") view=RssPage/>
         </Routes>
       </main>
       <SiteFooter/>
@@ -256,8 +258,7 @@ fn HomePage() -> impl IntoView {
     || (),
     |_| async move { get_post_summaries().await.unwrap_or_default() },
   );
-  let search_query = RwSignal::new(String::new());
-  let current_page = RwSignal::new(1);
+  let search_ctx = expect_context::<SearchContext>();
   let posts_per_page = 10;
 
   view! {
@@ -281,22 +282,10 @@ fn HomePage() -> impl IntoView {
         <p>"Thoughts on programming and technology"</p>
       </header>
 
-      <div class="search">
-        <input
-          type="text"
-          placeholder="Search posts..."
-          on:input=move |ev| {
-            search_query.set(event_target_value(&ev));
-            current_page.set(1);
-          }
-          prop:value=move || search_query.get()
-        />
-      </div>
-
       <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>
         {move || {
           posts.get().map(|posts| {
-            let query = search_query.get().to_lowercase();
+            let query = search_ctx.query.get().to_lowercase();
             let filtered_posts: Vec<PostSummary> = if query.is_empty() {
               posts
             } else {
@@ -316,7 +305,7 @@ fn HomePage() -> impl IntoView {
             } else {
               let total_posts = filtered_posts.len();
               let total_pages = (total_posts + posts_per_page - 1) / posts_per_page;
-              let current = current_page.get();
+              let current = search_ctx.current_page.get();
               let start_idx = (current - 1) * posts_per_page;
               let paginated_posts: Vec<PostSummary> = filtered_posts.into_iter().skip(start_idx).take(posts_per_page).collect();
 
@@ -329,8 +318,8 @@ fn HomePage() -> impl IntoView {
                     <div class="pagination">
                       <button
                         class="pagination-btn"
-                        disabled=move || current_page.get() == 1
-                        on:click=move |_| current_page.update(|p| *p = (*p - 1).max(1))
+                        disabled=move || search_ctx.current_page.get() == 1
+                        on:click=move |_| search_ctx.current_page.update(|p| *p = (*p - 1).max(1))
                       >
                         "Previous"
                       </button>
@@ -339,8 +328,8 @@ fn HomePage() -> impl IntoView {
                       </span>
                       <button
                         class="pagination-btn"
-                        disabled=move || current_page.get() >= total_pages
-                        on:click=move |_| current_page.update(|p| *p = (*p + 1).min(total_pages))
+                        disabled=move || search_ctx.current_page.get() >= total_pages
+                        on:click=move |_| search_ctx.current_page.update(|p| *p = (*p + 1).min(total_pages))
                       >
                         "Next"
                       </button>
@@ -501,71 +490,5 @@ fn TagPage() -> impl IntoView {
         }}
       </Suspense>
     </div>
-  }
-}
-
-#[component]
-fn SitemapPage() -> impl IntoView {
-  let sitemap = Resource::new(
-    || (),
-    |_| async move { get_sitemap().await.unwrap_or_default() },
-  );
-
-  view! {
-    <Suspense fallback=move || view! { <p>"Generating sitemap..."</p> }>
-      {move || {
-        sitemap.get().map(|content| {
-          view! {
-            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
-              {content}
-            </div>
-          }
-        })
-      }}
-    </Suspense>
-  }
-}
-
-#[component]
-fn RobotsPage() -> impl IntoView {
-  let robots = Resource::new(
-    || (),
-    |_| async move { get_robots_txt().await.unwrap_or_default() },
-  );
-
-  view! {
-    <Suspense fallback=move || view! { <p>"Generating robots.txt..."</p> }>
-      {move || {
-        robots.get().map(|content| {
-          view! {
-            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
-              {content}
-            </div>
-          }
-        })
-      }}
-    </Suspense>
-  }
-}
-
-#[component]
-fn RssPage() -> impl IntoView {
-  let rss = Resource::new(
-    || (),
-    |_| async move { get_rss().await.unwrap_or_default() },
-  );
-
-  view! {
-    <Suspense fallback=move || view! { <p>"Generating RSS feed..."</p> }>
-      {move || {
-        rss.get().map(|content| {
-          view! {
-            <div style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
-              {content}
-            </div>
-          }
-        })
-      }}
-    </Suspense>
   }
 }
