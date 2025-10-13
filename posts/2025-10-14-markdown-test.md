@@ -86,7 +86,38 @@ description: "Complete markdown syntax test with edge cases"
 
 ## 5. Images (이미지)
 
+### 외부 이미지
+
 ![대체 텍스트](https://via.placeholder.com/400x200 "이미지 제목")
+
+### 로컬 이미지
+
+![로컬 이미지 테스트](/2025-10-12/2025-10-14-1.png "로컬 이미지")
+
+---
+
+## 5.5 Videos (영상)
+
+### 로컬 영상 (HTML video 태그)
+
+<video controls style="width: 100%; height: auto;">
+  <source src="/2025-10-12/2025-10-14-2.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+### 유튜브 영상 (iframe 임베드)
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+  <iframe 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+    src="https://www.youtube.com/embed/ScdlYSAhFoI?si=Bj2zVJq8rU6Y9QnB" 
+    title="YouTube video player" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" 
+    allowfullscreen>
+  </iframe>
+</div>
 
 ---
 

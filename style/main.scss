@@ -573,6 +573,15 @@ main {
       margin: 1.5rem 0;
     }
 
+    video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      display: block;
+      background: var(--bg-secondary);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
