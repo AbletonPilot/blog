@@ -122,9 +122,9 @@
 - [ ] Copy generated script configuration
 
 ### Integrate into Leptos
-- [ ] Create Giscus component in src/components/giscus.rs
-- [ ] Add script loading logic for client-side rendering
-- [ ] Include Giscus component in post detail page
+- [x] Create Giscus component in src/components/giscus.rs
+- [x] Add script loading logic for client-side rendering
+- [x] Include Giscus component in post detail page
 - [ ] Test comments functionality in development
 - [ ] Verify dark mode theme switching works
 - [ ] Test on mobile devices

@@ -22,12 +22,12 @@ pub fn ArchivePage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="Archive - Junmo's Blog"/>
     <Meta property="og:description" content="Archive of all blog posts organized by year"/>
-    <Meta property="og:url" content="https://blog.ableton.me/archive"/>
+    <Meta property="og:url" content="https://blog.abletonpilot.me/archive"/>
     <Meta property="og:site_name" content="Junmo's Blog"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="Archive - Junmo's Blog"/>
     <Meta name="twitter:description" content="Archive of all blog posts organized by year"/>
-    <link rel="canonical" href="https://blog.ableton.me/archive"/>
+    <link rel="canonical" href="https://blog.abletonpilot.me/archive"/>
 
     <div class="container">
       <div class="archive-page">

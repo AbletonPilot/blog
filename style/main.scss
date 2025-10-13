@@ -509,6 +509,18 @@ main {
       text-decoration: underline;
     }
   }
+
+  .comments-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+  }
 }
 
 .tag-header {
@@ -952,5 +964,14 @@ main {
         }
       }
     }
+  }
+}
+
+// Giscus styles
+.giscus-wrapper {
+  margin-top: 2rem;
+  
+  .giscus {
+    width: 100%;
   }
 }

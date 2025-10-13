@@ -1,4 +1,4 @@
-use crate::components::{AboutPage, ArchivePage, PostSummaryCard};
+use crate::components::{AboutPage, ArchivePage, Giscus, PostSummaryCard};
 use crate::posts::{Post, PostSummary};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
@@ -418,6 +418,12 @@ fn PostPage() -> impl IntoView {
                     </header>
                     <div class="post-content" inner_html=content></div>
                     <a href="/" class="back-link">"← Back to posts"</a>
+
+                    // Comments section
+                    <div class="comments-section">
+                      <h2>"Comments"</h2>
+                      <Giscus/>
+                    </div>
                   </article>
                 }.into_any()
               },
