@@ -1,3 +1,4 @@
+use crate::components::{AboutPage, ArchivePage, PostSummaryCard};
 use crate::posts::{Post, PostSummary};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
@@ -82,6 +83,7 @@ fn SiteHeader() -> impl IntoView {
       }
     }
   };
+  let (menu_open, set_menu_open) = signal(false);
 
   view! {
     <header class="site-header">
@@ -89,11 +91,28 @@ fn SiteHeader() -> impl IntoView {
         <div class="nav-brand">
           <a href="/">"Junmo's Blog"</a>
         </div>
-        <div class="nav-right">
+
+        // Desktop navigation
+        <div class="nav-left desktop-nav">
           <ul class="nav-links">
-            <li><a href="/">"Home"</a></li>
+            <li><a href="/archive">"Archive"</a></li>
             <li><a href="/about">"About"</a></li>
           </ul>
+        </div>
+
+        <div class="nav-right">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search..."
+              class="search-input"
+            />
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </div>
+
           <button class="theme-toggle" on:click=toggle_theme>
             {move || if is_dark.get() {
               view! {
@@ -139,6 +158,23 @@ fn SiteHeader() -> impl IntoView {
               }
             }
           </button>
+
+          <button
+            class="hamburger-btn mobile-nav"
+            on:click=move |_| set_menu_open.update(|open| *open = !*open)
+          >
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </div>
+
+        // Mobile menu
+        <div class=move || format!("mobile-menu {}", if menu_open.get() { "open" } else { "" })>
+          <ul class="mobile-nav-links">
+            <li><a href="/archive" on:click=move |_| set_menu_open.set(false)>"Archive"</a></li>
+            <li><a href="/about" on:click=move |_| set_menu_open.set(false)>"About"</a></li>
+          </ul>
         </div>
       </nav>
     </header>
@@ -199,6 +235,8 @@ pub fn App() -> impl IntoView {
       <main>
         <Routes fallback=|| "Page not found.".into_view()>
           <Route path=StaticSegment("") view=HomePage/>
+          <Route path=StaticSegment("archive") view=ArchivePage/>
+          <Route path=StaticSegment("about") view=AboutPage/>
           <Route path=path!("/posts/:slug") view=PostPage/>
           <Route path=path!("/tags/:tag") view=TagPage/>
           <Route path=StaticSegment("sitemap.xml") view=SitemapPage/>
@@ -229,12 +267,12 @@ fn HomePage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="Junmo's Blog"/>
     <Meta property="og:description" content="A blog about programming, technology, and software development"/>
-    <Meta property="og:url" content="https://blog.ableton.me/"/>
+    <Meta property="og:url" content="https://blog.abletonpilot.me/"/>
     <Meta property="og:site_name" content="Junmo's Blog"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="Junmo's Blog"/>
     <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
-    <link rel="canonical" href="https://blog.ableton.me/"/>
+    <link rel="canonical" href="https://blog.abletonpilot.me/"/>
 
 
     <div class="container">
@@ -321,34 +359,6 @@ fn HomePage() -> impl IntoView {
 }
 
 #[component]
-fn PostSummaryCard(post: PostSummary) -> impl IntoView {
-  let slug = post.slug.clone();
-  let title = post.metadata.title.clone();
-  let date = post.metadata.date.clone();
-  let description = post.metadata.description.clone();
-  let tags = post.metadata.tags.clone();
-
-  view! {
-    <article class="post-card">
-      <h2><a href=format!("/posts/{}", slug)>{title}</a></h2>
-      <div class="post-meta">
-        <span class="date">{date}</span>
-        <span class="tags">
-          {tags.iter().map(|tag| {
-            let tag_text = tag.clone();
-            let tag_link = tag.clone();
-            view! {
-              <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
-            }
-          }).collect_view()}
-        </span>
-      </div>
-      <p class="description">{description}</p>
-    </article>
-  }
-}
-
-#[component]
 fn PostPage() -> impl IntoView {
   let params = leptos_router::hooks::use_params_map();
   let slug = move || params.read().get("slug").unwrap_or_default();
@@ -371,7 +381,7 @@ fn PostPage() -> impl IntoView {
                 let content = post.content.clone();
                 let description = post.metadata.description.clone();
                 let page_title = format!("{} - Junmo's Blog", title);
-                let og_url = format!("https://blog.ableton.me/posts/{}", post.slug);
+                let og_url = format!("https://blog.abletonpilot.me/posts/{}", post.slug);
 
                 view! {
                   <Title text=page_title.clone()/>

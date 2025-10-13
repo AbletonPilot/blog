@@ -1,4 +1,5 @@
 pub mod app;
+pub mod components;
 pub mod performance;
 pub mod posts;
 pub mod rss;
