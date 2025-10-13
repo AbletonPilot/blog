@@ -164,6 +164,8 @@ main {
       justify-content: center;
       transition: all 0.2s;
       position: relative;
+      width: 40px;
+      height: 40px;
 
       &:hover {
         background: var(--bg-primary);
@@ -174,32 +176,24 @@ main {
         width: 20px;
         height: 20px;
         position: absolute;
-        transition: opacity 0.2s, transform 0.2s;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        transition: opacity 0.2s ease, transform 0.2s ease;
       }
 
       .moon-icon {
+        display: block;
         opacity: 1;
-        transform: rotate(0deg);
+        visibility: visible;
       }
 
       .sun-icon {
+        display: block;
         opacity: 0;
-        transform: rotate(180deg);
+        visibility: hidden;
       }
-    }
-  }
-
-  // Theme icon visibility for light mode
-  html.light-mode .site-header .theme-toggle,
-  body.light-mode .site-header .theme-toggle {
-    .moon-icon {
-      opacity: 0;
-      transform: rotate(180deg);
-    }
-
-    .sun-icon {
-      opacity: 1;
-      transform: rotate(0deg);
     }
   }
 
@@ -267,6 +261,19 @@ main {
       }
     }
   }
+}
+
+// Theme icon visibility for light mode
+html.light-mode .site-header .theme-toggle .moon-icon,
+body.light-mode .site-header .theme-toggle .moon-icon {
+  opacity: 0;
+  visibility: hidden;
+}
+
+html.light-mode .site-header .theme-toggle .sun-icon,
+body.light-mode .site-header .theme-toggle .sun-icon {
+  opacity: 1;
+  visibility: visible;
 }
 
 .blog-header {
@@ -879,10 +886,12 @@ main {
 
       .theme-toggle {
         padding: 0.3rem;
+        width: 36px;
+        height: 36px;
         
         .theme-icon {
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
         }
       }
 
