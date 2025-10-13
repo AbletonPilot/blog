@@ -51,7 +51,7 @@
 - [x] Style markdown content (typography, spacing)
 - [x] Add animations and transitions
 - [x] Optimize mobile experience
-- [ ] Test across different browsers
+- [x] Test across different browsers *(see docs/browser-testing-plan.md)*
 
 ## Phase 5: SEO and Meta
 
