@@ -9,6 +9,7 @@
   --code-text: #e8e8e8;
 }
 
+html.light-mode,
 body.light-mode {
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
@@ -162,16 +163,43 @@ main {
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
+      position: relative;
 
       &:hover {
         background: var(--bg-primary);
         color: var(--accent);
       }
 
-      svg {
+      .theme-icon {
         width: 20px;
         height: 20px;
+        position: absolute;
+        transition: opacity 0.2s, transform 0.2s;
       }
+
+      .moon-icon {
+        opacity: 1;
+        transform: rotate(0deg);
+      }
+
+      .sun-icon {
+        opacity: 0;
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // Theme icon visibility for light mode
+  html.light-mode .site-header .theme-toggle,
+  body.light-mode .site-header .theme-toggle {
+    .moon-icon {
+      opacity: 0;
+      transform: rotate(180deg);
+    }
+
+    .sun-icon {
+      opacity: 1;
+      transform: rotate(0deg);
     }
   }
 
@@ -852,7 +880,7 @@ main {
       .theme-toggle {
         padding: 0.3rem;
         
-        svg {
+        .theme-icon {
           width: 16px;
           height: 16px;
         }
@@ -1152,6 +1180,7 @@ main {
   }
 }
 
+html.light-mode .post-content,
 body.light-mode .post-content {
   pre.code-light {
     display: block;
