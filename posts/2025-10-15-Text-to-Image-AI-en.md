@@ -1,5 +1,5 @@
 ---
-title: "You Can Create AI Images Without a eGPU?!"
+title: "You Can Create AI Images Without a eGPU?! (en)"
 date: 2025-10-15
 tags: [linux, ai, text-to-image, rocm, comfyui, en]
 description: "A to Z guide on creating AI images without a eGPU"
@@ -70,6 +70,14 @@ ask Gemini or GPT about "how to do XXX" or do a Google search (recommended). And
 I highly recommend checking Reddit content first. (It helped me a lot.)
 
 > If Reddit content is in English and hard to understand, you can add `?tl=kr` at the end of the link to translate some posts to Korean!
+ 
+```bash
+// How to find your GPU (linux)
+lspci | grep -i vga
+
+// If nothing shows up
+lspci | grep -i display
+```
 
 <br>
 
