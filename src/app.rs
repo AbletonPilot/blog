@@ -497,7 +497,7 @@ fn PostPage() -> impl IntoView {
                   <Meta property="og:url" content=og_url.clone()/>
                   <Meta property="og:site_name" content="AbletonPilot"/>
                   <Meta property="article:published_time" content=date.clone()/>
-                  <Meta property="article:author" content="Junmo"/>
+                  <Meta property="article:author" content="AbletonPilot"/>
                   <Meta property="article:tag" content=tags.join(", ")/>
                   <Meta name="twitter:card" content="summary"/>
                   <Meta name="twitter:title" content=title.clone()/>

@@ -1,4 +1,4 @@
-# Junmo's Blog
+# AbletonPilot Blog
 
 Welcome to my personal blog where I share my thoughts on programming, technology, and various projects I'm working on.
 

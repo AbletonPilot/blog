@@ -5,16 +5,16 @@ use leptos_meta::{Meta, Title};
 pub fn AboutPage() -> impl IntoView {
   view! {
     <Title text="About - AbletonPilot"/>
-    <Meta name="description" content="About Junmo, software developer and technology enthusiast"/>
-    <Meta name="keywords" content="about, junmo, software developer, programming, technology"/>
+    <Meta name="description" content="About AbletonPilot, software developer and technology enthusiast"/>
+    <Meta name="keywords" content="about, AbletonPilot, software developer, programming, technology"/>
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="About - AbletonPilot"/>
-    <Meta property="og:description" content="About Junmo, software developer and technology enthusiast"/>
+    <Meta property="og:description" content="About AbletonPilot, software developer and technology enthusiast"/>
     <Meta property="og:url" content="https://abletonpilot.onrender.com/about"/>
     <Meta property="og:site_name" content="AbletonPilot"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="About - AbletonPilot"/>
-    <Meta name="twitter:description" content="About Junmo, software developer and technology enthusiast"/>
+    <Meta name="twitter:description" content="About AbletonPilot, software developer and technology enthusiast"/>
     <link rel="canonical" href="https://abletonpilot.onrender.com/about"/>
 
     <div class="container">
@@ -25,7 +25,7 @@ pub fn AboutPage() -> impl IntoView {
 
         <div class="about-content">
           <section class="intro">
-            <h2>"Hello, I'm Junmo"</h2>
+            <h2>"Hello, I'm AbletonPilot"</h2>
             <p>"I'm a software developer and I'm working on developer in Australia. I'm passionate about building efficient and elegant solutions with AI tools.
                 I know sometimes AI tools can make mistakes, but I can handle those situations well with my experience and knowledge.
                 And I enjoy exploring new technologies and sharing my experiences, learning English through this blog."</p>
