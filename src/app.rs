@@ -236,6 +236,53 @@ fn SiteHeader() -> impl IntoView {
 }
 
 #[component]
+fn CookieConsent() -> impl IntoView {
+  let (show_banner, set_show_banner) = signal(true);
+
+  // Check localStorage on mount
+  Effect::new(move |_| {
+    #[cfg(target_arch = "wasm32")]
+    {
+      if let Some(window) = web_sys::window() {
+        if let Ok(Some(storage)) = window.local_storage() {
+          if storage.get_item("cookie-consent").ok().flatten().is_some() {
+            set_show_banner.set(false);
+          }
+        }
+      }
+    }
+  });
+
+  let accept_cookies = move |_| {
+    #[cfg(target_arch = "wasm32")]
+    {
+      if let Some(window) = web_sys::window() {
+        if let Ok(Some(storage)) = window.local_storage() {
+          let _ = storage.set_item("cookie-consent", "accepted");
+        }
+      }
+    }
+    set_show_banner.set(false);
+  };
+
+  view! {
+    <Show when=move || show_banner.get()>
+      <div class="cookie-banner">
+        <div class="cookie-content">
+          <p>
+            "This site uses cookies to analyze traffic and improve your experience. "
+            "By clicking Accept, you consent to the use of Google Analytics."
+          </p>
+          <button class="cookie-accept" on:click=accept_cookies>
+            "Accept"
+          </button>
+        </div>
+      </div>
+    </Show>
+  }
+}
+
+#[component]
 fn SiteFooter() -> impl IntoView {
   view! {
     <footer class="site-footer">
@@ -271,6 +318,18 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
       <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+        // Google Analytics
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-K09XPDY5Z0"></script>
+        <script>
+          {r#"
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-K09XPDY5Z0');
+          "#}
+        </script>
+
         <script>
           {r#"
           (function() {
@@ -341,6 +400,7 @@ pub fn App() -> impl IntoView {
         </Routes>
       </main>
       <SiteFooter/>
+      <CookieConsent/>
     </Router>
   }
 }
