@@ -1,8 +1,8 @@
 ---
-title: "You Can Create AI Images Without a Dedicated GPU?!"
+title: "You Can Create AI Images Without a eGPU?!"
 date: 2025-10-15
 tags: [linux, ai, text-to-image, rocm, comfyui, en]
-description: "A to Z guide on creating AI images without a dedicated graphics card"
+description: "A to Z guide on creating AI images without a eGPU"
 ---
 
 ## Oh! It's Finally Here!
