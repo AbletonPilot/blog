@@ -5,11 +5,11 @@ pub fn generate_rss(posts: &[Post]) -> String {
     r#"<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Junmo's Blog</title>
-    <link>https://blog.abletonpilot.me</link>
+    <title>AbletonPilot</title>
+    <link>https://abletonpilot.onrender.com</link>
     <description>A blog about programming, technology, and software development</description>
     <language>en-us</language>
-    <atom:link href="https://blog.abletonpilot.me/rss.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://abletonpilot.onrender.com/rss.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 13 Oct 2025 00:00:00 GMT</lastBuildDate>
     <generator>Leptos RSS Generator</generator>
 "#,
@@ -19,7 +19,7 @@ pub fn generate_rss(posts: &[Post]) -> String {
   for post in posts.iter().take(20) {
     // Limit to most recent 20 posts
     let pub_date = format_rfc2822_date(&post.metadata.date);
-    let post_url = format!("https://blog.abletonpilot.me/posts/{}", post.slug);
+    let post_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
 
     rss.push_str(&format!(
       r#"    <item>

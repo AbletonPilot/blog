@@ -143,7 +143,7 @@ fn SiteHeader() -> impl IntoView {
     <header class="site-header">
       <nav class="container">
         <div class="nav-brand">
-          <a href="/">"Junmo's Blog"</a>
+          <a href="/">"AbletonPilot"</a>
         </div>
 
         // Desktop navigation
@@ -241,13 +241,17 @@ fn SiteFooter() -> impl IntoView {
     <footer class="site-footer">
       <div class="container">
       <div>
-        <p>"© 2024 Junmo. All rights reserved."</p>
+        <p>"© 2025 AbletonPilot. All rights reserved."</p>
       </div>
         <p>
           "Built with Rust and Leptos | "
           <span class="footer-links">
             <a href="https://github.com/AbletonPilot" target="_blank">
               "GitHub"
+            </a>
+            <span>" | "</span>
+            <a href="https://www.linkedin.com/in/junmo-son-46093a1b9/" target="_blank">
+              "LinkedIn"
             </a>
             <span>" | "</span>
             <a href="https://ko-fi.com/abletonpilot" target="_blank">
@@ -285,8 +289,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         </script>
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-        <link rel="dns-prefetch" href="https://blog.abletonpilot.me"/>
-        <link rel="alternate" type="application/rss+xml" title="Junmo's Blog RSS Feed" href="/rss.xml"/>
+        <link rel="dns-prefetch" href="https://abletonpilot.onrender.com"/>
+        <link rel="alternate" type="application/rss+xml" title="AbletonPilot RSS Feed" href="/rss.xml"/>
         <AutoReload options=options.clone() />
         <HydrationScripts options/>
         <MetaTags/>
@@ -315,7 +319,7 @@ pub fn App() -> impl IntoView {
     // id=leptos means cargo-leptos will hot-reload this stylesheet
     <Stylesheet id="leptos" href="/pkg/blog.css"/>
     // sets the document title
-    <Title text="Junmo's Blog"/>
+    <Title text="AbletonPilot"/>
     // content for this welcome page
     <Router>
       <SiteHeader/>
@@ -352,27 +356,27 @@ fn HomePage() -> impl IntoView {
   let posts_per_page = 10;
 
   view! {
-    <Title text="Junmo's Blog - Thoughts on programming and technology"/>
+    <Title text="AbletonPilot - Thoughts on programming and technology"/>
     <Meta name="description" content="A blog about programming, technology, and software development. Sharing insights and experiences in web development, Rust, and more."/>
     <Meta name="keywords" content="programming, technology, software development, rust, web development, leptos"/>
     <Meta property="og:type" content="website"/>
-    <Meta property="og:title" content="Junmo's Blog"/>
+    <Meta property="og:title" content="AbletonPilot"/>
     <Meta property="og:description" content="A blog about programming, technology, and software development"/>
-    <Meta property="og:url" content="https://blog.abletonpilot.me/"/>
-    <Meta property="og:site_name" content="Junmo's Blog"/>
+    <Meta property="og:url" content="https://abletonpilot.onrender.com/"/>
+    <Meta property="og:site_name" content="AbletonPilot"/>
     <Meta name="twitter:card" content="summary"/>
-    <Meta name="twitter:title" content="Junmo's Blog"/>
+    <Meta name="twitter:title" content="AbletonPilot"/>
     <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
-    <link rel="canonical" href="https://blog.abletonpilot.me/"/>
+    <link rel="canonical" href="https://abletonpilot.onrender.com/"/>
 
 
     <div class="container">
       <header class="blog-header">
         <div class="header-intro">
           <span class="wave">"👋"</span>
-          <span class="greeting">" Welcome to Junmo's Blog"</span>
+          <span class="greeting">" Welcome to AbletonPilot"</span>
         </div>
-        <h1>"Junmo's Blog"</h1>
+        <h1>"AbletonPilot"</h1>
         <p class="tagline">"Thoughts on programming and technology"</p>
         <div class="social-icons">
           <a href="https://github.com/AbletonPilot" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-icon">
@@ -480,8 +484,8 @@ fn PostPage() -> impl IntoView {
                 let tags = post.metadata.tags.clone();
                 let content = post.content.clone();
                 let description = post.metadata.description.clone();
-                let page_title = format!("{} - Junmo's Blog", title);
-                let og_url = format!("https://blog.abletonpilot.me/posts/{}", post.slug);
+                let page_title = format!("{} - AbletonPilot", title);
+                let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
 
                 view! {
                   <Title text=page_title.clone()/>
@@ -491,7 +495,7 @@ fn PostPage() -> impl IntoView {
                   <Meta property="og:title" content=title.clone()/>
                   <Meta property="og:description" content=description.clone()/>
                   <Meta property="og:url" content=og_url.clone()/>
-                  <Meta property="og:site_name" content="Junmo's Blog"/>
+                  <Meta property="og:site_name" content="AbletonPilot"/>
                   <Meta property="article:published_time" content=date.clone()/>
                   <Meta property="article:author" content="Junmo"/>
                   <Meta property="article:tag" content=tags.join(", ")/>
@@ -528,7 +532,7 @@ fn PostPage() -> impl IntoView {
                 }.into_any()
               },
               None => view! {
-                <Title text="Post Not Found - Junmo's Blog"/>
+                <Title text="Post Not Found - AbletonPilot"/>
                 <Meta name="description" content="The requested blog post could not be found"/>
 
                 <div class="not-found">
@@ -558,8 +562,8 @@ fn TagPage() -> impl IntoView {
   view! {
     {move || {
       let current_tag = tag();
-      let page_title = format!("Posts tagged with '{}' - Junmo's Blog", current_tag);
-      let description = format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag);
+      let page_title = format!("Posts tagged with '{}' - AbletonPilot", current_tag);
+      let description = format!("All blog posts tagged with '{}' on AbletonPilot", current_tag);
 
       view! {
         <Title text=page_title/>
@@ -567,11 +571,11 @@ fn TagPage() -> impl IntoView {
         <Meta name="keywords" content=format!("{}, programming, technology", current_tag)/>
         <Meta property="og:type" content="website"/>
         <Meta property="og:title" content=format!("Posts tagged with '{}'", current_tag)/>
-        <Meta property="og:description" content=format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag)/>
-        <Meta property="og:site_name" content="Junmo's Blog"/>
+        <Meta property="og:description" content=format!("All blog posts tagged with '{}' on AbletonPilot", current_tag)/>
+        <Meta property="og:site_name" content="AbletonPilot"/>
         <Meta name="twitter:card" content="summary"/>
         <Meta name="twitter:title" content=format!("Posts tagged with '{}'", current_tag)/>
-        <Meta name="twitter:description" content=format!("All blog posts tagged with '{}' on Junmo's Blog", current_tag)/>
+        <Meta name="twitter:description" content=format!("All blog posts tagged with '{}' on AbletonPilot", current_tag)/>
       }
     }}
 

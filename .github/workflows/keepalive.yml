@@ -1,0 +1,17 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent sleep
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping blog to prevent sleep
+        run: |
+          echo "Pinging blog at $(date)"
+          curl -f https://abletonpilot.onrender.com || echo "Ping failed, but continuing"
+          echo "Ping completed"

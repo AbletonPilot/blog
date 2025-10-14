@@ -10,7 +10,7 @@ pub fn generate_sitemap(posts: &[Post]) -> String {
   // Add homepage
   sitemap.push_str(&format!(
     r#"  <url>
-    <loc>https://blog.abletonpilot.me/</loc>
+    <loc>https://abletonpilot.onrender.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -21,7 +21,7 @@ pub fn generate_sitemap(posts: &[Post]) -> String {
   for post in posts {
     sitemap.push_str(&format!(
       r#"  <url>
-    <loc>https://blog.abletonpilot.me/posts/{}</loc>
+    <loc>https://abletonpilot.onrender.com/posts/{}</loc>
     <lastmod>{}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -42,7 +42,7 @@ pub fn generate_sitemap(posts: &[Post]) -> String {
   for tag in tags {
     sitemap.push_str(&format!(
       r#"  <url>
-    <loc>https://blog.abletonpilot.me/tags/{}</loc>
+    <loc>https://abletonpilot.onrender.com/tags/{}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -59,7 +59,7 @@ pub fn generate_robots_txt() -> String {
   r#"User-agent: *
 Allow: /
 
-Sitemap: https://blog.abletonpilot.me/sitemap.xml
+Sitemap: https://abletonpilot.onrender.com/sitemap.xml
 "#
   .to_string()
 }

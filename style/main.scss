@@ -845,8 +845,46 @@ body.light-mode .site-header .theme-toggle .sun-icon {
     font-size: 1.25rem;
   }
 
-  .post-detail header h1 {
-    font-size: 2rem;
+  .post-detail {
+    header h1 {
+      font-size: 2rem;
+    }
+
+    .post-content {
+      font-size: 1rem;
+
+      h1 { font-size: 1.75rem; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.25rem; }
+
+      p {
+        font-size: 1rem;
+      }
+
+      pre {
+        code {
+          font-size: 0.75rem;
+          line-height: 1.4;
+        }
+      }
+
+      code {
+        font-size: 0.8rem;
+      }
+
+      table {
+        font-size: 0.85rem;
+        
+        th, td {
+          padding: 0.5rem;
+          font-size: 0.85rem;
+        }
+      }
+
+      blockquote {
+        font-size: 0.95rem;
+      }
+    }
   }
 
   .site-header {

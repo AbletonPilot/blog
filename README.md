@@ -1,91 +1,245 @@
-<picture>
-    <source srcset="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_Solid_White.svg" media="(prefers-color-scheme: dark)">
-    <img src="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_RGB.svg" alt="Leptos Logo">
-</picture>
+# AbletonPilot
 
-# Leptos Axum Starter Template
+A personal blog built with Rust and Leptos, featuring markdown-based posts, dark/light mode, real-time search, and GitHub Discussions comments.
 
-This is a template for use with the [Leptos](https://github.com/leptos-rs/leptos) web framework and the [cargo-leptos](https://github.com/akesson/cargo-leptos) tool using [Axum](https://github.com/tokio-rs/axum).
+🌐 **Live Site**: [https://abletonpilot.onrender.com](https://abletonpilot.onrender.com)
 
-## Creating your template repo
+---
 
-If you don't have `cargo-leptos` installed you can install it with
+## 🚀 Features
+
+- **Markdown-based Blog**: Write posts in `posts/` folder with YAML front matter
+- **Dark/Light Mode**: System preference detection with localStorage persistence
+- **Real-time Search**: Search by title, description, and tags
+- **Tag System**: Filter posts by tags
+- **Comments**: GitHub Discussions integration via Giscus
+- **RSS Feed**: Available at `/rss.xml`
+- **Responsive Design**: Mobile-optimized UI with hamburger menu
+- **Syntax Highlighting**: Code blocks with multiple language support
+- **SEO Optimized**: Meta tags, Open Graph, Twitter Cards, sitemap
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Leptos 0.8](https://leptos.dev/) (Rust)
+- **Server**: [Axum](https://github.com/tokio-rs/axum)
+- **Styling**: SCSS with CSS custom properties
+- **Markdown**: pulldown-cmark with syntect highlighting
+- **Comments**: [Giscus](https://giscus.app/) (GitHub Discussions)
+- **Deployment**: [Render.com](https://render.com/) (Free tier)
+
+---
+
+## 📝 Writing Posts
+
+### 1. Create Markdown File
 
 ```bash
-cargo install cargo-leptos --locked
+posts/YYYY-MM-DD-slug.md
 ```
 
-Then run
+### 2. Add Front Matter
+
+```yaml
+---
+title: "Your Post Title"
+date: YYYY-MM-DD
+tags: [tag1, tag2]
+description: "Brief description for SEO and search"
+---
+```
+
+### 3. Write Content
+
+Use standard Markdown syntax. See [docs/markdown-guide.md](docs/markdown-guide.md) for comprehensive guide.
+
+### 4. Add Media (Optional)
+
 ```bash
-cargo leptos new --git https://github.com/leptos-rs/start-axum
+public/YYYY-MM-DD/image.png
+public/YYYY-MM-DD/video.mp4
 ```
 
-to generate a new project template.
+Reference in markdown:
+```markdown
+![Image](/YYYY-MM-DD/image.png)
+<video controls><source src="/YYYY-MM-DD/video.mp4" type="video/mp4"></video>
+```
+
+---
+
+## 🏃 Local Development
+
+### Prerequisites
+
+- Rust (nightly)
+- cargo-leptos
+- WASM target
+
+### Installation
 
 ```bash
-cd blog
+# Install Rust nightly
+rustup toolchain install nightly
+
+# Add WASM target
+rustup target add wasm32-unknown-unknown
+
+# Install cargo-leptos
+cargo install cargo-leptos
 ```
 
-to go to your newly created project.
-Feel free to explore the project structure, but the best place to start with your application code is in `src/app.rs`.
-Additionally, Cargo.toml may need updating as new versions of the dependencies are released, especially if things are not working after a `cargo update`.
-
-## Running your project
+### Run Development Server
 
 ```bash
 cargo leptos watch
 ```
 
-## Installing Additional Tools
+Visit `http://localhost:3000`
 
-By default, `cargo-leptos` uses `nightly` Rust, `cargo-generate`, and `sass`. If you run into any trouble, you may need to install one or more of these tools.
+---
 
-1. `rustup toolchain install nightly --allow-downgrade` - make sure you have Rust nightly
-2. `rustup target add wasm32-unknown-unknown` - add the ability to compile Rust to WebAssembly
-3. `cargo install cargo-generate` - install `cargo-generate` binary (should be installed automatically in future)
-4. `npm install -g sass` - install `dart-sass` (should be optional in future
-5. Run `npm install` in end2end subdirectory before test
+## 🚢 Deployment
 
-## Compiling for Release
+This blog is deployed on [Render.com](https://render.com/) with automatic deployment on `git push`.
+
+### Render Configuration
+
+**Build Command:**
 ```bash
-cargo leptos build --release
+rustup target add wasm32-unknown-unknown && cargo install cargo-leptos && cargo leptos build --release
 ```
 
-Will generate your server binary in target/release and your site package in target/site
-
-## Testing Your Project
+**Start Command:**
 ```bash
-cargo leptos end-to-end
+./target/release/blog
 ```
 
-```bash
-cargo leptos end-to-end --release
+**Environment Variables:**
+- `LEPTOS_OUTPUT_NAME` = `blog`
+- `LEPTOS_SITE_ROOT` = `target/site`
+- `LEPTOS_SITE_PKG_DIR` = `pkg`
+- `LEPTOS_SITE_ADDR` = `0.0.0.0:10000`
+
+### Deployment Workflow
+
+1. Write post in `posts/`
+2. Add media to `public/` (if needed)
+3. Test locally: `cargo leptos watch`
+4. Commit and push:
+   ```bash
+   git add .
+   git commit -m "Add new post: title"
+   git push origin main
+   ```
+5. Render automatically builds and deploys (2-5 minutes)
+
+---
+
+## 📂 Project Structure
+
+```
+blog/
+├── src/
+│   ├── app.rs              # Main application with routing
+│   ├── main.rs             # Server entry point
+│   ├── posts.rs            # Markdown parser and loader
+│   ├── rss.rs              # RSS feed generator
+│   ├── sitemap.rs          # Sitemap generator
+│   └── components/         # Leptos components
+├── posts/                  # Markdown blog posts
+│   └── YYYY-MM-DD-slug.md
+├── public/                 # Static assets (images, videos)
+│   └── YYYY-MM-DD/
+├── style/
+│   └── main.scss           # Styles with dark/light themes
+├── docs/
+│   └── markdown-guide.md   # Markdown writing guide
+└── Cargo.toml              # Dependencies and Leptos config
 ```
 
-Cargo-leptos uses Playwright as the end-to-end test tool.
-Tests are located in end2end/tests directory.
+---
 
-## Executing a Server on a Remote Machine Without the Toolchain
-After running a `cargo leptos build --release` the minimum files needed are:
+## 🎨 Customization
 
-1. The server binary located in `target/server/release`
-2. The `site` directory and all files within located in `target/site`
+### Change Theme Colors
 
-Copy these files to your remote server. The directory structure should be:
-```text
-blog
-site/
+Edit `style/main.scss`:
+
+```scss
+:root {
+  --bg-primary: #1a1a1a;
+  --text-primary: #e8e8e8;
+  --accent: #7ee787;
+  // ...
+}
 ```
-Set the following environment variables (updating for your project as needed):
-```sh
-export LEPTOS_OUTPUT_NAME="blog"
-export LEPTOS_SITE_ROOT="site"
-export LEPTOS_SITE_PKG_DIR="pkg"
-export LEPTOS_SITE_ADDR="127.0.0.1:3000"
-export LEPTOS_RELOAD_PORT="3001"
+
+### Update Site Metadata
+
+Edit `src/app.rs`:
+
+```rust
+<Title text="Your Blog Name"/>
+<Meta property="og:site_name" content="Your Blog Name"/>
 ```
-Finally, run the server binary.
 
-## Licensing
+### Modify Giscus Settings
 
-This template itself is released under the Unlicense. You should replace the LICENSE for your own application with an appropriate license if you plan to release it publicly.
+Edit `src/components/giscus.rs` with your repository settings.
+
+---
+
+## 📊 Performance & Limits
+
+**Render.com Free Tier:**
+- 512MB RAM
+- 0.1 CPU
+- 750 hours/month
+- Sleeps after 15min inactivity
+
+**Storage:**
+- Slug size limit: 500MB
+- Current size: ~46MB
+- Estimated capacity: 30-70 blog posts (with images/videos)
+
+**Optimization Tips:**
+- Compress images (target: 200-500KB)
+- Use external CDN for large media (Cloudinary, YouTube)
+- Enable UptimeRobot to prevent sleep (optional)
+
+---
+
+## 📖 Documentation
+
+- [Markdown Guide](docs/markdown-guide.md) - Comprehensive writing guide
+- [Giscus Setup](docs/giscus-setup-guide.md) - Comments integration
+- [TODO](TODO.md) - Development progress and features
+
+---
+
+## 🤝 Contributing
+
+This is a personal blog, but feel free to:
+- Report issues
+- Suggest features
+- Fork for your own use
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🔗 Links
+
+- **Blog**: [https://abletonpilot.onrender.com](https://abletonpilot.onrender.com)
+- **GitHub**: [https://github.com/AbletonPilot](https://github.com/AbletonPilot)
+- **Ko-fi**: [https://ko-fi.com/abletonpilot](https://ko-fi.com/abletonpilot)
+
+---
+
+**Built with ❤️ using Rust and Leptos**
