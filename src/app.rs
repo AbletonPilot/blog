@@ -487,6 +487,37 @@ fn PostPage() -> impl IntoView {
                 let page_title = format!("{} - AbletonPilot", title);
                 let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
 
+                // Structured Data (JSON-LD) for SEO
+                let schema_json = format!(
+                  r#"{{
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    "headline": "{}",
+                    "description": "{}",
+                    "datePublished": "{}",
+                    "author": {{
+                      "@type": "Person",
+                      "name": "AbletonPilot",
+                      "url": "https://abletonpilot.onrender.com/about"
+                    }},
+                    "publisher": {{
+                      "@type": "Organization",
+                      "name": "AbletonPilot",
+                      "url": "https://abletonpilot.onrender.com"
+                    }},
+                    "mainEntityOfPage": {{
+                      "@type": "WebPage",
+                      "@id": "{}"
+                    }},
+                    "keywords": "{}"
+                  }}"#,
+                  title.replace('"', "\\\""),
+                  description.replace('"', "\\\""),
+                  date,
+                  og_url,
+                  tags.join(", ")
+                );
+
                 view! {
                   <Title text=page_title.clone()/>
                   <Meta name="description" content=description.clone()/>
@@ -503,6 +534,8 @@ fn PostPage() -> impl IntoView {
                   <Meta name="twitter:title" content=title.clone()/>
                   <Meta name="twitter:description" content=description/>
                   <Meta name="twitter:url" content=og_url/>
+
+                  <script type="application/ld+json">{schema_json}</script>
 
                   <article class="post-detail">
                     <header>
