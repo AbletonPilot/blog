@@ -595,9 +595,8 @@ fn PostPage() -> impl IntoView {
                   <Meta name="twitter:description" content=description/>
                   <Meta name="twitter:url" content=og_url/>
 
-                  <script type="application/ld+json">{schema_json}</script>
-
                   <article class="post-detail">
+                    <script type="application/ld+json" inner_html=schema_json></script>
                     <header>
                       <h1>{title}</h1>
                       <div class="post-meta">
