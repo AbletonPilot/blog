@@ -527,6 +527,11 @@ body.light-mode .site-header .theme-toggle .sun-icon {
       color: var(--text-primary);
     }
 
+    h1, h2 {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
     h1 { font-size: 2rem; }
     h2 { font-size: 1.75rem; }
     h3 { font-size: 1.5rem; }

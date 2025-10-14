@@ -5,9 +5,9 @@ tags: [linux, ai, my-opinion, kr]
 description: "첫 게시물 및 이 블로그의 목표"
 ---
 
-![External image](https://i.namu.wiki/i/ShTzcoMeHE4voCN_b3hTBqixr8Z2NO_O8XEIFIhN3_7rbIfSdq0hUfUw5GJJoF55QatW6GRiwpI9qbX3tI0Mlg.webp)
+## 왜 블로그를 만들지?
 
-### 왜 블로그를 만들지?
+![External image](https://i.namu.wiki/i/ShTzcoMeHE4voCN_b3hTBqixr8Z2NO_O8XEIFIhN3_7rbIfSdq0hUfUw5GJJoF55QatW6GRiwpI9qbX3tI0Mlg.webp)
 
 AI가 발전하여 프로젝트 및 그림을 만드는데에 있어서 너무나도 접근이 쉬워졌다. (야호!)
 
@@ -24,9 +24,9 @@ AI가 발전하여 프로젝트 및 그림을 만드는데에 있어서 너무�
 
 <br><br><br>
 
-![External image](https://media.gettyimages.com/id/946339470/video/nick-young-reacts-to-a-story-with-a-confused-face-turning-into-a-viral-meme-while-filming-an.jpg?s=640x640&k=20&c=zbBenmYIwKZyjztbTqvOSQm79oKz5APkBfMV-ZPyJXo=)
+## 그래서 이 블로그는 무엇을 하느냐!
 
-### 그래서 이 블로그는 무엇을 하느냐!
+![External image](https://media.gettyimages.com/id/946339470/video/nick-young-reacts-to-a-story-with-a-confused-face-turning-into-a-viral-meme-while-filming-an.jpg?s=640x640&k=20&c=zbBenmYIwKZyjztbTqvOSQm79oKz5APkBfMV-ZPyJXo=)
 
 **최대한 제 멋대로 만들려고 한다.**
 
@@ -39,9 +39,9 @@ AI가 발전하여 프로젝트 및 그림을 만드는데에 있어서 너무�
 
 <br><br><br>
 
-<img src="https://i.namu.wiki/i/5lWwYGj-VC8ZqJxug7Exm5-7rHE97fdZui3DWEAjm0zdLiBCbcdw4mLyGhcbZ_KecZOQr4rtwNJSFs63Rsdd_Q.webp" alt="블로그 만들기" style="width: 100%; display: block; margin: 0 auto;">
+## 마치며
 
-### 마치며
+<img src="https://i.namu.wiki/i/5lWwYGj-VC8ZqJxug7Exm5-7rHE97fdZui3DWEAjm0zdLiBCbcdw4mLyGhcbZ_KecZOQr4rtwNJSFs63Rsdd_Q.webp" alt="블로그 만들기" style="width: 100%; display: block; margin: 0 auto;">
 
 첫 게시물이고 블로그라는 콘텐츠를 만드는데에 처음이다 보니 이게 맞나 싶기도 하고 이 글을 얼마나 많은 사람이 보고 
 도움이 된다고 이런 글을 작성하는지는 모르겠지만 나 혼자 사용한다는 느낌을 만들어보려고 한다. :)

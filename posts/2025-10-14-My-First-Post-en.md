@@ -5,9 +5,9 @@ tags: [linux, ai, my-opinion, en]
 description: "First blog post and the goals of this blog"
 ---
 
-![External image](https://i.namu.wiki/i/ShTzcoMeHE4voCN_b3hTBqixr8Z2NO_O8XEIFIhN3_7rbIfSdq0hUfUw5GJJoF55QatW6GRiwpI9qbX3tI0Mlg.webp)
+## Why Create a Blog?
 
-### Why Create a Blog?
+![External image](https://i.namu.wiki/i/ShTzcoMeHE4voCN_b3hTBqixr8Z2NO_O8XEIFIhN3_7rbIfSdq0hUfUw5GJJoF55QatW6GRiwpI9qbX3tI0Mlg.webp)
 
 AI has advanced so much that creating projects and artwork has become incredibly accessible. (Yay!)
 
@@ -23,9 +23,9 @@ It feels like the ocean is being polluted with garbage.
 
 <br><br><br>
 
-![External image](https://media.gettyimages.com/id/946339470/video/nick-young-reacts-to-a-story-with-a-confused-face-turning-into-a-viral-meme-while-filming-an.jpg?s=640x640&k=20&c=zbBenmYIwKZyjztbTqvOSQm79oKz5APkBfMV-ZPyJXo=)
+## So What's This Blog About?
 
-### So What's This Blog About?
+![External image](https://media.gettyimages.com/id/946339470/video/nick-young-reacts-to-a-story-with-a-confused-face-turning-into-a-viral-meme-while-filming-an.jpg?s=640x640&k=20&c=zbBenmYIwKZyjztbTqvOSQm79oKz5APkBfMV-ZPyJXo=)
 
 **I'm going to do whatever I want.**
 
@@ -35,9 +35,10 @@ As mentioned above, with AI-generated content dominating the internet, it feels 
 
 <br><br><br>
 
+## Closing Thoughts
+
 ![External image](https://chameleonmemes.com/wp-content/uploads/2023/03/When-You-Telling-A-Story-And-Nobodys-paying-Attention.jpg)
 
-### Closing Thoughts
 
 This is my first blog post, and since it's my first time creating blog content, I'm not sure if I'm doing this right. I don't know how many people will read this or find it helpful, but I'm trying to create a space that feels like my own. :)
 
