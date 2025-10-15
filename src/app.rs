@@ -319,17 +319,14 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        // Google Analytics - Optimized loading
+        // Google Analytics
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-K09XPDY5Z0"></script>
         <script>
           {r#"
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-K09XPDY5Z0', {
-            'anonymize_ip': true,
-            'send_page_view': false
-          });
+          gtag('config', 'G-K09XPDY5Z0');
           "#}
         </script>
 
