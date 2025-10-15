@@ -2,7 +2,8 @@
 #[tokio::main]
 async fn main() {
   use axum::{
-    http::{header, StatusCode},
+    http::{header, HeaderValue, StatusCode},
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     Router,
   };
@@ -19,6 +20,31 @@ async fn main() {
   let leptos_options = conf.leptos_options;
   // Generate the list of routes in your Leptos App
   let routes = generate_route_list(App);
+
+  // Cache control middleware for static assets
+  async fn cache_middleware(req: axum::extract::Request, next: Next) -> Response {
+    let path = req.uri().path().to_string();
+    let mut response = next.run(req).await;
+
+    // Apply cache headers to static assets
+    if path.starts_with("/pkg/")
+      || path.ends_with(".css")
+      || path.ends_with(".js")
+      || path.ends_with(".wasm")
+    {
+      response.headers_mut().insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("public, max-age=31536000, immutable"),
+      );
+    } else if path.ends_with(".xml") || path.ends_with(".txt") {
+      response.headers_mut().insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("public, max-age=3600"),
+      );
+    }
+
+    response
+  }
 
   // RSS handler
   async fn rss_handler() -> Response {
@@ -64,6 +90,7 @@ async fn main() {
       move || shell(leptos_options.clone())
     })
     .fallback(leptos_axum::file_and_error_handler(shell))
+    .layer(middleware::from_fn(cache_middleware))
     .with_state(leptos_options);
 
   // run our app with hyper

@@ -319,14 +319,17 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        // Google Analytics
+        // Google Analytics - Optimized loading
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-K09XPDY5Z0"></script>
         <script>
           {r#"
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-K09XPDY5Z0');
+          gtag('config', 'G-K09XPDY5Z0', {
+            'anonymize_ip': true,
+            'send_page_view': false
+          });
           "#}
         </script>
 
@@ -349,6 +352,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
         <link rel="dns-prefetch" href="https://abletonpilot.onrender.com"/>
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
         <link rel="alternate" type="application/rss+xml" title="AbletonPilot RSS Feed" href="/rss.xml"/>
         <AutoReload options=options.clone() />
         <HydrationScripts options/>
@@ -434,7 +438,7 @@ fn HomePage() -> impl IntoView {
       <header class="blog-header">
         <div class="header-intro">
           <span class="wave">"👋"</span>
-          <span class="greeting">" Welcome to AbletonPilot"</span>
+          <span class="greeting">" Welcome to AbletonPilot Blog"</span>
         </div>
         <h1>"AbletonPilot"</h1>
         <p class="tagline">"Thoughts on programming and technology"</p>

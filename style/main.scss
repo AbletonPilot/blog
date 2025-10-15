@@ -60,6 +60,8 @@ main {
   position: sticky;
   top: 0;
   z-index: 100;
+  min-height: 72px; // Prevent layout shift
+  contain: layout style paint; // Performance optimization
 
   nav {
     max-width: 1200px;
@@ -342,6 +344,8 @@ body.light-mode .site-header .theme-toggle .sun-icon {
       transition: all 0.3s ease;
       text-decoration: none;
       flex-shrink: 0;
+      // Prevent layout shift
+      will-change: transform, box-shadow;
 
       svg {
         width: 20px;
@@ -355,6 +359,7 @@ body.light-mode .site-header .theme-toggle .sun-icon {
         color: var(--accent);
         border-color: var(--accent);
         box-shadow: 0 0 15px rgba(100, 181, 246, 0.4);
+        transform: translateY(-2px);
       }
     }
   }
@@ -413,6 +418,9 @@ body.light-mode .site-header .theme-toggle .sun-icon {
   border-radius: 8px;
   padding: 1.5rem;
   transition: transform 0.2s, border-color 0.2s;
+  min-height: 150px; // Prevent layout shift
+  contain: layout style; // Performance optimization
+  will-change: transform; // GPU acceleration hint
 
   &:hover {
     transform: translateY(-2px);
@@ -615,6 +623,9 @@ body.light-mode .site-header .theme-toggle .sun-icon {
       height: auto;
       border-radius: 8px;
       margin: 1.5rem 0;
+      // Prevent layout shift
+      aspect-ratio: attr(width) / attr(height);
+      object-fit: cover;
     }
 
     video {
@@ -624,6 +635,8 @@ body.light-mode .site-header .theme-toggle .sun-icon {
       margin: 1.5rem 0;
       display: block;
       background: var(--bg-secondary);
+      // Prevent layout shift
+      aspect-ratio: 16 / 9;
     }
 
     table {
@@ -786,6 +799,8 @@ body.light-mode .site-header .theme-toggle .sun-icon {
   padding: 1rem 0;
   margin-top: 4rem;
   text-align: center;
+  min-height: 80px; // Prevent layout shift
+  contain: layout style paint; // Performance optimization
 
   .container {
     padding: 1rem;
@@ -795,6 +810,7 @@ body.light-mode .site-header .theme-toggle .sun-icon {
     color: var(--text-secondary);
     margin-bottom: 0;
     display: inline-block;
+    font-size: 0.9rem;
   }
 
   .footer-links {
