@@ -375,13 +375,13 @@ pub fn App() -> impl IntoView {
   provide_context(search_ctx);
 
   view! {
-    // injects a stylesheet into the document <head>
-    // id=leptos means cargo-leptos will hot-reload this stylesheet
-    <Stylesheet id="leptos" href="/pkg/blog.css"/>
-    // sets the document title
-    <Title text="AbletonPilot"/>
     // content for this welcome page
     <Router>
+      // injects a stylesheet into the document <head>
+      // id=leptos means cargo-leptos will hot-reload this stylesheet
+      <Stylesheet id="leptos" href="/pkg/blog.css"/>
+      // sets the document title
+      <Title text="AbletonPilot"/>
       <SiteHeader/>
       <main>
         <Routes fallback=|| view! {
