@@ -1,6 +1,6 @@
 ---
-title: "My First Post (kr)"
-date: 2025-10-14
+title: "나의 첫 게시물 (kr)"
+date: 2025-10-14T10:29:44
 tags: [linux, ai, my-opinion, kr]
 description: "첫 게시물 및 이 블로그의 목표"
 ---

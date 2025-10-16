@@ -554,12 +554,13 @@ fn PostPage() -> impl IntoView {
             match post_opt {
               Some(post) => {
                 let title = post.metadata.title.clone();
-                let date = post.metadata.date.clone();
+                let date = post.metadata.date.clone(); // Full datetime for SEO
+                let display_datetime = post.metadata.display_datetime.clone(); // Date and time for display
                 let tags = post.metadata.tags.clone();
                 let content = post.content.clone();
                 let description = post.metadata.description.clone();
                 let preview = post.preview.clone();
-                let page_title = format!("{} - AbletonPilot Blog", title);
+                let page_title = format!("{} | AbletonPilot", title);
                 let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
 
                 // Combine description and preview for better SEO
@@ -606,25 +607,31 @@ fn PostPage() -> impl IntoView {
                   <Title text=page_title.clone()/>
                   <Meta name="description" content=full_description.clone()/>
                   <Meta name="keywords" content=tags.join(", ")/>
+                  <Meta name="author" content="AbletonPilot"/>
+                  <Meta name="application-name" content="AbletonPilot"/>
                   <Meta property="og:type" content="article"/>
                   <Meta property="og:title" content=title.clone()/>
                   <Meta property="og:description" content=full_description.clone()/>
                   <Meta property="og:url" content=og_url.clone()/>
                   <Meta property="og:site_name" content="AbletonPilot"/>
+                  <Meta property="og:locale" content="en_US"/>
                   <Meta property="article:published_time" content=date.clone()/>
                   <Meta property="article:author" content="AbletonPilot"/>
                   <Meta property="article:tag" content=tags.join(", ")/>
-                  <Meta name="twitter:card" content="summary"/>
+                  <Meta name="twitter:card" content="summary_large_image"/>
                   <Meta name="twitter:title" content=title.clone()/>
-                  <Meta name="twitter:description" content=full_description/>
-                  <Meta name="twitter:url" content=og_url/>
+                  <Meta name="twitter:description" content=full_description.clone()/>
+                  <Meta name="twitter:url" content=og_url.clone()/>
+                  <Meta name="twitter:site" content="@AbletonPilot"/>
+                  <link rel="canonical" href=og_url.clone()/>
+                  <Meta name="robots" content="index, follow"/>
 
                   <article class="post-detail">
                     <script type="application/ld+json" inner_html=schema_json></script>
                     <header>
                       <h1>{title}</h1>
                       <div class="post-meta">
-                        <span class="date">{date}</span>
+                        <span class="date">{display_datetime}</span>
                         <span class="tags">
                           {tags.iter().map(|tag| {
                             let tag_text = tag.clone();
