@@ -429,14 +429,18 @@ fn HomePage() -> impl IntoView {
     <Title text="AbletonPilot Blog - Thoughts on programming and technology"/>
     <Meta name="description" content="A blog about programming, technology, and software development. Sharing insights and experiences in web development, Rust, and more."/>
     <Meta name="keywords" content="programming, technology, software development, rust, web development, leptos"/>
+    <Meta name="author" content="AbletonPilot"/>
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="AbletonPilot Blog"/>
     <Meta property="og:description" content="A blog about programming, technology, and software development"/>
     <Meta property="og:url" content="https://abletonpilot.onrender.com/"/>
     <Meta property="og:site_name" content="AbletonPilot Blog"/>
+    <Meta property="og:locale" content="en_US"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="AbletonPilot Blog"/>
     <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
+    <Meta name="twitter:site" content="@AbletonPilot"/>
+    <Meta name="application-name" content="AbletonPilot Blog"/>
     <link rel="canonical" href="https://abletonpilot.onrender.com/"/>
 
 
@@ -554,8 +558,18 @@ fn PostPage() -> impl IntoView {
                 let tags = post.metadata.tags.clone();
                 let content = post.content.clone();
                 let description = post.metadata.description.clone();
+                let preview = post.preview.clone();
                 let page_title = format!("{} - AbletonPilot Blog", title);
                 let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
+
+                // Combine description and preview for better SEO
+                let full_description = if description.is_empty() {
+                  preview.clone()
+                } else if preview.is_empty() {
+                  description.clone()
+                } else {
+                  format!("{} {}", description, preview)
+                };
 
                 // Structured Data (JSON-LD) for SEO
                 let schema_json = format!(
@@ -590,11 +604,11 @@ fn PostPage() -> impl IntoView {
 
                 view! {
                   <Title text=page_title.clone()/>
-                  <Meta name="description" content=description.clone()/>
+                  <Meta name="description" content=full_description.clone()/>
                   <Meta name="keywords" content=tags.join(", ")/>
                   <Meta property="og:type" content="article"/>
                   <Meta property="og:title" content=title.clone()/>
-                  <Meta property="og:description" content=description.clone()/>
+                  <Meta property="og:description" content=full_description.clone()/>
                   <Meta property="og:url" content=og_url.clone()/>
                   <Meta property="og:site_name" content="AbletonPilot"/>
                   <Meta property="article:published_time" content=date.clone()/>
@@ -602,7 +616,7 @@ fn PostPage() -> impl IntoView {
                   <Meta property="article:tag" content=tags.join(", ")/>
                   <Meta name="twitter:card" content="summary"/>
                   <Meta name="twitter:title" content=title.clone()/>
-                  <Meta name="twitter:description" content=description/>
+                  <Meta name="twitter:description" content=full_description/>
                   <Meta name="twitter:url" content=og_url/>
 
                   <article class="post-detail">

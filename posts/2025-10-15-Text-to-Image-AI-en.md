@@ -7,7 +7,7 @@ description: "A to Z guide on creating AI images without a eGPU"
 
 ## Oh! It's Finally Here!
 
-<img src="https://preview.redd.it/just-a-low-quality-meme-v0-t8kn2pa8v4zc1.png?width=1080&crop=smart&auto=webp&s=016c9c615c05be16b0706a2c50f9580a44d4cb2b" alt="Thinkpad = CHAD" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://preview.redd.it/thinkpads-are-attractive-v0-totijpavl8k81.jpg?auto=webp&s=e081213524beaabd005d3ac5e8ea35369a265c29" alt="thinkpad" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
