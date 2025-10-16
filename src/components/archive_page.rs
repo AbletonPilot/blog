@@ -16,16 +16,16 @@ pub fn ArchivePage() -> impl IntoView {
   );
 
   view! {
-    <Title text="Archive - AbletonPilot"/>
-    <Meta name="description" content="Archive of all blog posts organized by year"/>
+    <Title text="Archive - AbletonPilot Blog"/>
+    <Meta name="description" content="Browse all blog posts organized by date"/>
     <Meta name="keywords" content="archive, blog posts, programming, technology"/>
     <Meta property="og:type" content="website"/>
-    <Meta property="og:title" content="Archive - AbletonPilot"/>
-    <Meta property="og:description" content="Archive of all blog posts organized by year"/>
+    <Meta property="og:title" content="Archive - AbletonPilot Blog"/>
+    <Meta property="og:description" content="Browse all blog posts organized by date"/>
     <Meta property="og:url" content="https://abletonpilot.onrender.com/archive"/>
-    <Meta property="og:site_name" content="AbletonPilot"/>
+    <Meta property="og:site_name" content="AbletonPilot Blog"/>
     <Meta name="twitter:card" content="summary"/>
-    <Meta name="twitter:title" content="Archive - AbletonPilot"/>
+    <Meta name="twitter:title" content="Archive - AbletonPilot Blog"/>
     <Meta name="twitter:description" content="Archive of all blog posts organized by year"/>
     <link rel="canonical" href="https://abletonpilot.onrender.com/archive"/>
 
