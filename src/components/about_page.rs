@@ -46,8 +46,10 @@ pub fn AboutPage() -> impl IntoView {
             <div class="tech-list">
               <span class="tech-item">"Linux"</span>
               <span class="tech-item">"Rust"</span>
+              <span class="tech-item">"Go"</span>
+              <span class="tech-item">"Python"</span>
               <span class="tech-item">"JavaScript/TypeScript"</span>
-              <span class="tech-item">"React"</span>
+              <span class="tech-item">"React/NextJS"</span>
               <span class="tech-item">"Leptos"</span>
               <span class="tech-item">"Node.js"</span>
               <span class="tech-item">"PostgreSQL"</span>

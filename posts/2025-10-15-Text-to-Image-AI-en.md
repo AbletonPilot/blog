@@ -1,5 +1,5 @@
 ---
-title: "You Can Create AI Images Without a eGPU?! (en)"
+title: "You Can Create AI Images Without eGPU?! (en)"
 date: 2025-10-15T23:17:47
 tags: [linux, ai, text-to-image, rocm, comfyui, en]
 description: "A to Z guide on creating AI images without a eGPU"
