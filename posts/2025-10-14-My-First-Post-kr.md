@@ -41,7 +41,7 @@ AI가 발전하여 프로젝트 및 그림을 만드는데에 있어서 너무�
 
 ## 마치며
 
-<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/Hqr6ZrnURAiG3OgZ0Yw9RMJBXr83ysTfG9aP161Et5yqydIg0_yewDqzJUfgwx9UtsWYcKpnDmjWcfaYk-Rr7elyCWaQLR3uUa5QkLeq9hcMtrDE48-OeJEt7Y5EGWtfOhqokW9FT4sYCVU5PdFQP03TH8owyeFsYG8ayaXE9Nw.webps" alt="블로그 만들기" style="width: 100%; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/Hqr6ZrnURAiG3OgZ0Yw9RMJBXr83ysTfG9aP161Et5yqydIg0_yewDqzJUfgwx9UtsWYcKpnDmjWcfaYk-Rr7elyCWaQLR3uUa5QkLeq9hcMtrDE48-OeJEt7Y5EGWtfOhqokW9FT4sYCVU5PdFQP03TH8owyeFsYG8ayaXE9Nw.webp" alt="블로그 만들기" style="width: 100%; display: block; margin: 0 auto;">
 
 첫 게시물이고 블로그라는 콘텐츠를 만드는데에 처음이다 보니 이게 맞나 싶기도 하고 이 글을 얼마나 많은 사람이 보고 
 도움이 된다고 이런 글을 작성하는지는 모르겠지만 나 혼자 사용한다는 느낌을 만들어보려고 한다. :)
