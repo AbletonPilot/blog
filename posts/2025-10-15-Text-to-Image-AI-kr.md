@@ -7,7 +7,7 @@ description: "외장 그래픽 없이 AI 이미지 만드는 방법 A to Z"
 
 ## 오! 드디어 나왔군!
 
-<img src="https://preview.redd.it/thinkpads-are-attractive-v0-totijpavl8k81.jpg?auto=webp&s=e081213524beaabd005d3ac5e8ea35369a265c29" alt="thinkpad" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/thinkpads-are-attractive-v0-totijpavl8k81.webp" alt="thinkpad" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
@@ -38,7 +38,7 @@ rocm-hip-sdk 6.4.4-1
 하지만 버전이 업데이이트 되었다고 내 사양이 적용되지 않았을 수도 있기에 큰 기대는 하지 않으며 
 릴리즈 노트를 확인했는데...
 
-![ROCm 6.4.4 Release Notes](/2025-10-15/2025-10-14-1.png "ROCm 6.4.4 Release Notes")
+![ROCm 6.4.4 Release Notes](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-1.png "ROCm 6.4.4 Release Notes")
 
 야호! 드디어 내 노트북으로 AI 이미지 만들수 있게 됬다! (참고로 저는 Ryzen AI 9 HX 370)
 
@@ -46,7 +46,7 @@ rocm-hip-sdk 6.4.4-1
 
 ## 이전엔 뭐가 문제였는데?
 
-<img src="https://thunderdungeon.com/wp-content/uploads/2025/06/coding-memes-19-6-9-2025-600x497.jpg" alt="That doesn't work for me!" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/coding-memes-19-6-9-2025-600x497.jpg" alt="That doesn't work for me!" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
@@ -54,7 +54,7 @@ rocm-hip-sdk 6.4.4-1
 
 pytoch에서 원하는 버전이 있는데 그 버전 안에 내 컴퓨터 사양이 없었다. 이게 끝이다.
 
-![PyTorch requires](/2025-10-15/2025-10-14-2.png "PyTorch requires")
+![PyTorch requires](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-2.png "PyTorch requires")
 
 위의 사진에서 볼 수 있듯이 Linux, pip, python, ROCm(AMD GPU) 을 사용하는 사람이라면 
 rocm 6.4 를 설치하라고 되어있으며, 그 6.4버전 안에 해당 GPU 가 있어야된다. 하지만 이전에는 
@@ -64,7 +64,7 @@ rocm 6.4 를 설치하라고 되어있으며, 그 6.4버전 안에 해당 GPU �
 
 ## 설치 가이드를 위해 다시 설치부터 생각해보자!
 
-<img src="https://en.meming.world/images/en/6/62/Ah_Shit%2C_Here_We_Go_Again.jpg" alt="here we go" style="width: 100%; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/Ah_Shit%2C_Here_We_Go_Again.jpg" alt="here we go" style="width: 100%; display: block; margin: 0 auto;">
 
 AI 이미지를 만들기 이전에 준비해야될 것들을 차근차근 해보도록 하겠다.
 
@@ -247,7 +247,7 @@ HSA_OVERRIDE_GFX_VERSION=11.5.1 python main.py --lowvram
 ```
 ### 6. 실행 결과
 
-![result](/2025-10-15/2025-10-14-4.png "result")
+![result](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-4.png "result")
 
 이건 당연하게 실행은 잘 되었다.
 
@@ -255,11 +255,11 @@ HSA_OVERRIDE_GFX_VERSION=11.5.1 python main.py --lowvram
 
 그리고 이제 저 127.0.0.1:8188 사이트로 들어가면 
 
-![comfyui gui](/2025-10-15/2025-10-14-5.png "comfyui gui")
+![comfyui gui](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-5.png "comfyui gui")
 
 이제 이 위에서 AI 이미지를 생성하고 저장할 수 있다. 심지어 오프라인으로! 이걸로 내 심심했던 일상에서 즐길거리가 하나 추가 되었다 ㅎㅅㅎ
 
-![need to active venv](/2025-10-15/2025-10-14-3.png "need to active venv")
+![need to active venv](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-3.png "need to active venv")
 
 그리고 이건 위에서 말했듯 venv 를 activate 하지 않았을 때 나오는 에러다. 당황하지 말고 위에 있는 명령어를 사용하고 실행하면 된다.
 
@@ -267,7 +267,7 @@ HSA_OVERRIDE_GFX_VERSION=11.5.1 python main.py --lowvram
 
 ## 그래서 결과물은?
 
-<img src="https://i.pinimg.com/originals/2c/3c/e2/2c3ce2285740ac78b6c2d49c62c0cc67.gif" alt="This is not an excuse" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2c3ce2285740ac78b6c2d49c62c0cc67.gif" alt="This is not an excuse" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 

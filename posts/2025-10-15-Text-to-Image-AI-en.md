@@ -7,7 +7,7 @@ description: "A to Z guide on creating AI images without a eGPU"
 
 ## Oh! It's Finally Here!
 
-<img src="https://preview.redd.it/thinkpads-are-attractive-v0-totijpavl8k81.jpg?auto=webp&s=e081213524beaabd005d3ac5e8ea35369a265c29" alt="thinkpad" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/thinkpads-are-attractive-v0-totijpavl8k81.webp" alt="thinkpad" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
@@ -35,7 +35,7 @@ Oh..! Finally, ROCm got a version update..!
 
 However, just because the version was updated doesn't necessarily mean my specs would be supported, so I checked the release notes without too much expectation...
 
-![ROCm 6.4.4 Release Notes](/2025-10-15/2025-10-14-1.png "ROCm 6.4.4 Release Notes")
+![ROCm 6.4.4 Release Notes](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-1.png "ROCm 6.4.4 Release Notes")
 
 Yahoo! Finally, I can create AI images on my laptop! (For reference, I have a Ryzen AI 9 HX 370)
 
@@ -43,7 +43,7 @@ Yahoo! Finally, I can create AI images on my laptop! (For reference, I have a Ry
 
 ## What Was the Problem Before?
 
-<img src="https://thunderdungeon.com/wp-content/uploads/2025/06/coding-memes-19-6-9-2025-600x497.jpg" alt="That doesn't work for me!" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/coding-memes-19-6-9-2025-600x497.jpg" alt="That doesn't work for me!" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
@@ -51,7 +51,7 @@ To keep it short since you or future me probably aren't too curious about this:
 
 PyTorch had a required version, but my computer specs weren't included in that version. That's it.
 
-![PyTorch requires](/2025-10-15/2025-10-14-2.png "PyTorch requires")
+![PyTorch requires](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-2.png "PyTorch requires")
 
 As you can see in the image above, if you're using Linux, pip, python, and ROCm (AMD GPU), 
 it says to install ROCm 6.4, and your GPU must be supported in that 6.4 version. However, previously, 
@@ -61,7 +61,7 @@ my GPU specs weren't included, so no matter what I did, the computer would just 
 
 ## Here I Go Again To Think Through the Installation for a Guide!
 
-<img src="https://en.meming.world/images/en/6/62/Ah_Shit%2C_Here_We_Go_Again.jpg" alt="here we go" style="width: 100%; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/Ah_Shit%2C_Here_We_Go_Again.jpg" alt="here we go" style="width: 100%; display: block; margin: 0 auto;">
 
 Let's go through the things we need to prepare before creating AI images step by step.
 
@@ -244,7 +244,7 @@ HSA_OVERRIDE_GFX_VERSION=11.5.1 python main.py --lowvram
 ```
 ### 6. Execution Result
 
-![result](/2025-10-15/2025-10-14-4.png "result")
+![result](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-4.png "result")
 
 Of course, it ran well.
 
@@ -252,11 +252,11 @@ You might think "Why do you say 'of course'?" Actually, even when the version di
 
 Now if you go to that 127.0.0.1:8188 site 
 
-![comfyui gui](/2025-10-15/2025-10-14-5.png "comfyui gui")
+![comfyui gui](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-5.png "comfyui gui")
 
 Now you can generate and save AI images here. Even offline! This added one more thing to enjoy in my boring daily life ㅎㅅㅎ
 
-![need to active venv](/2025-10-15/2025-10-14-3.png "need to active venv")
+![need to active venv](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2025-10-14-3.png "need to active venv")
 
 And this is the error that appears when you haven't activated venv as mentioned above. Don't panic, just use the command above and run it.
 
@@ -264,7 +264,7 @@ And this is the error that appears when you haven't activated venv as mentioned 
 
 ## So What Is the AI Results?
 
-<img src="https://i.pinimg.com/originals/2c/3c/e2/2c3ce2285740ac78b6c2d49c62c0cc67.gif" alt="This is not an excuse" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+<img src="https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/2c3ce2285740ac78b6c2d49c62c0cc67.gif" alt="This is not an excuse" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
 
 <br>
 
