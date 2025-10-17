@@ -1,6 +1,6 @@
 ---
 title: "외장 그래픽 없이 AI 이미지를 만들 수 있다고?! (kr)"
-date: 2025-10-15T23:11:59
+date: 2025-10-15T23:11:59Z
 tags: [linux, ai, text-to-image, rocm, comfyui, kr]
 description: "외장 그래픽 없이 AI 이미지 만드는 방법 A to Z"
 ---
