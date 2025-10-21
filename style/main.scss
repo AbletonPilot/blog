@@ -779,7 +779,7 @@ body.light-mode .site-header .theme-toggle .sun-icon {
 
 .pagination {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;

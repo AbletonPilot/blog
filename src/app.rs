@@ -494,39 +494,34 @@ fn HomePage() -> impl IntoView {
             } else {
               let total_posts = filtered_posts.len();
               let total_pages = (total_posts + posts_per_page - 1) / posts_per_page;
-              let current = search_ctx.current_page.get();
-              let start_idx = (current - 1) * posts_per_page;
+              let start_idx = (search_ctx.current_page.get() - 1) * posts_per_page;
               let paginated_posts: Vec<PostSummary> = filtered_posts.into_iter().skip(start_idx).take(posts_per_page).collect();
 
+              let show_pagination = total_pages > 1;
+              let tp = total_pages;
               view! {
                 <div class="posts-list">
                   {paginated_posts.iter().map(|post| view! { <PostSummaryCard post=post.clone() /> }).collect_view()}
                 </div>
-                {if total_pages > 1 {
-                  view! {
-                    <div class="pagination">
-                      <button
-                        class="pagination-btn"
-                        disabled=move || search_ctx.current_page.get() == 1
-                        on:click=move |_| search_ctx.current_page.update(|p| *p = (*p - 1).max(1))
-                      >
-                        "Previous"
-                      </button>
-                      <span class="pagination-info">
-                        {format!("Page {} of {}", current, total_pages)}
-                      </span>
-                      <button
-                        class="pagination-btn"
-                        disabled=move || search_ctx.current_page.get() >= total_pages
-                        on:click=move |_| search_ctx.current_page.update(|p| *p = (*p + 1).min(total_pages))
-                      >
-                        "Next"
-                      </button>
-                    </div>
-                  }.into_any()
-                } else {
-                  view! { <div></div> }.into_any()
-                }}
+                <Show when=move || show_pagination fallback=|| view! {}>
+                  <div class="pagination">
+                    <button
+                      class="pagination-btn"
+                      on:click=move |_| search_ctx.current_page.update(|p| *p = (*p - 1).max(1))
+                    >
+                      "Previous"
+                    </button>
+                    <span class="pagination-info">
+                      {move || format!("Page {} of {}", search_ctx.current_page.get(), tp)}
+                    </span>
+                    <button
+                      class="pagination-btn"
+                      on:click=move |_| search_ctx.current_page.update(|p| *p = (*p + 1).min(tp))
+                    >
+                      "Next"
+                    </button>
+                  </div>
+                </Show>
               }.into_any()
             }
           })
