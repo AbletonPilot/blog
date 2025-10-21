@@ -1,6 +1,6 @@
 ---
-title: "You Can Create AI Images Without eGPU?! (en)"
-date: 2025-10-15T23:17:47Z
+title: "You Can Create AI Images Without eGPU?!"
+date: 2025-09-25T23:17:47Z
 tags: [linux, ai, text-to-image, rocm, comfyui, en]
 description: "A to Z guide on creating AI images without a eGPU"
 ---
@@ -11,7 +11,7 @@ description: "A to Z guide on creating AI images without a eGPU"
 
 <br>
 
-Around early August this year, there was a summer sale on ThinkPads, so I thought, "Since this is happening, I might as well switch to Linux" and bought one. 
+Around early February this year, there was a sale on ThinkPads, so I thought, "Since this is happening, I might as well switch to Linux" and bought one. 
 I spent a whole month just setting it up. (Arch Linux and Hyprland are really...)
 
 Even though I got it on sale, it still cost around 3000 AUD, so I was determined to squeeze every bit of value out of this laptop. I installed various things and customized it.

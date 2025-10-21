@@ -1,6 +1,6 @@
 ---
-title: "My First Post (en)"
-date: 2025-10-14T10:32:04Z
+title: "My First Post"
+date: 2025-05-14T10:32:04Z
 tags: [linux, ai, my-opinion, en]
 description: "First blog post and the goals of this blog"
 ---

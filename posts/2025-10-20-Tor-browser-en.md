@@ -1,5 +1,5 @@
 ---
-title: "Tor Browser (en)"
+title: "Tor Browser"
 date: 2025-10-20T16:45:53Z
 tags: [linux, tor, principle, my-opinion, en]
 description: "Is Tor Browser safe or dangerous?"

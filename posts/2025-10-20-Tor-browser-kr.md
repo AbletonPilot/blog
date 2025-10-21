@@ -1,8 +1,8 @@
 ---
-title: "Tor Browser (kr)"
+title: "토르 브라우저"
 date: 2025-10-20T16:16:43Z
 tags: [linux, tor, principle, my-opinion, kr]
-description: "tor borwser 는 안전한가? 아니면 위험한가?"
+description: "Tor Borwser 는 안전한가? 아니면 위험한가?"
 ---
 
 ## 위험하면서도 안전한 녀석, Tor Browser
