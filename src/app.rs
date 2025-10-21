@@ -672,6 +672,8 @@ fn TagPage() -> impl IntoView {
   let params = leptos_router::hooks::use_params_map();
   let tag = move || params.read().get("tag").unwrap_or_default();
 
+  let (current_page, set_current_page) = signal(1usize);
+
   let posts = Resource::new(
     move || tag(),
     |tag| async move { get_posts_by_tag_summaries(tag).await.unwrap_or_default() },
@@ -705,18 +707,47 @@ fn TagPage() -> impl IntoView {
 
       <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>
         {move || {
-          posts.get().map(|posts| {
-            if posts.is_empty() {
+          posts.get().map(|all_posts| {
+            if all_posts.is_empty() {
               view! {
                 <div class="no-posts">
                   <p>"No posts found with this tag."</p>
                 </div>
               }.into_any()
             } else {
+              let posts_per_page = 10;
+              let total_pages = (all_posts.len() + posts_per_page - 1) / posts_per_page;
+              let page = current_page.get();
+
+              let start = (page - 1) * posts_per_page;
+              let end = (start + posts_per_page).min(all_posts.len());
+              let current_posts: Vec<_> = all_posts[start..end].to_vec();
+
+              let show_pagination = total_pages > 1;
+              let tp = total_pages;
               view! {
                 <div class="posts-list">
-                  {posts.iter().map(|post| view! { <PostSummaryCard post=post.clone() /> }).collect_view()}
+                  {current_posts.iter().map(|post| view! { <PostSummaryCard post=post.clone() /> }).collect_view()}
                 </div>
+                <Show when=move || show_pagination fallback=|| view! {}>
+                  <div class="pagination">
+                    <button
+                      class="pagination-btn"
+                      on:click=move |_| set_current_page.update(|p| *p = (*p - 1).max(1))
+                    >
+                      "Previous"
+                    </button>
+                    <span class="pagination-info">
+                      {move || format!("Page {} of {}", current_page.get(), tp)}
+                    </span>
+                    <button
+                      class="pagination-btn"
+                      on:click=move |_| set_current_page.update(|p| *p = (*p + 1).min(tp))
+                    >
+                      "Next"
+                    </button>
+                  </div>
+                </Show>
               }.into_any()
             }
           })
