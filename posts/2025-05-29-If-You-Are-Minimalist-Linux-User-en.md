@@ -56,6 +56,21 @@ Currently, I've created a top bar using networkmanager(nmcli) and eww that autom
 
 <br><br><br>
 
+## Widgets
+
+After WiFi, I was shocked to discover there were no basic widgets to check things like WiFi connection status, current volume level, monitor brightness, or remaining battery life.
+
+For things like volume and brightness, I could roughly gauge them through sight and hearing, but for battery life, unless the charger was connected, prayer was the only option.
+
+Fortunately, I could check the current status through terminal commands.
+
+```bash
+// current percentage
+cat /sys/class/power_supply/BAT0/capacity
+```
+
+<br><br><br>
+
 ## Font & Input Method
 
 ![square error](https://pub-9fab8c462d8d4428bf45385586df9f1a.r2.dev/thread-214057525-7251051804450518141.jpg)
@@ -186,6 +201,8 @@ By the way, that `sudo unmount /mnt/external` is the same as right-clicking "Saf
 
 This wasn't very complex. You might think "What is this?", but simply put, it's about controlling different performance levels for sleep mode, CPU boost, GPU boost, etc., when charging or in battery mode.
 
+In other words, unlike the previous battery status widget, I needed a program for overall system management.
+
 I used TLP. TLP has the advantage of being set-it-and-forget-it after installation, very comprehensive battery life protection and settings, and being lightweight. However, it can conflict with other power management tools, and settings can be complex, so you need to be careful.
 
 ```
@@ -231,6 +248,8 @@ sudo systemctl restart tlp
 // Check settings
 sudo tlp-stat -s
 ```
+
+> If you want to change back to default instead of TLP, you can check and modify files in `/sys/class/power_supply/BAT0/` like when checking battery status earlier.
 
 <br><br><br>
 
