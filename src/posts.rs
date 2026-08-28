@@ -109,6 +109,57 @@ pub struct PostSummary {
   pub thumbnail: Option<String>, // First image URL for thumbnails
 }
 
+pub fn post_slugs(posts: &[PostSummary]) -> Vec<String> {
+  posts.iter().map(|post| post.slug.clone()).collect()
+}
+
+pub fn post_tags(posts: &[PostSummary]) -> Vec<String> {
+  let mut tags: Vec<_> = posts
+    .iter()
+    .flat_map(|post| post.metadata.tags.iter().cloned())
+    .collect();
+  tags.sort();
+  tags.dedup();
+  tags
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  fn summary(slug: &str, tags: &[&str]) -> PostSummary {
+    PostSummary {
+      slug: slug.to_string(),
+      metadata: PostMetadata {
+        title: slug.to_string(),
+        date: "2026-08-28T00:00:00".to_string(),
+        display_date: "2026-08-28".to_string(),
+        display_datetime: "2026-08-28 00:00".to_string(),
+        tags: tags.iter().map(|tag| (*tag).to_string()).collect(),
+        description: String::new(),
+      },
+      thumbnail: None,
+    }
+  }
+
+  #[test]
+  fn static_post_slugs_preserve_post_order() {
+    let posts = vec![summary("newer", &["rust"]), summary("older", &["linux"])];
+
+    assert_eq!(post_slugs(&posts), vec!["newer", "older"]);
+  }
+
+  #[test]
+  fn static_post_tags_are_sorted_and_deduplicated() {
+    let posts = vec![
+      summary("one", &["rust", "linux"]),
+      summary("two", &["linux", "ai"]),
+    ];
+
+    assert_eq!(post_tags(&posts), vec!["ai", "linux", "rust"]);
+  }
+}
+
 impl Post {
   pub fn from_markdown(slug: String, markdown_content: &str) -> Result<Self, String> {
     let parts: Vec<&str> = markdown_content.split("---").collect();
