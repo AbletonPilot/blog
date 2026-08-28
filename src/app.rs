@@ -88,7 +88,13 @@ fn SiteHeader() -> impl IntoView {
 
   let is_dark = RwSignal::new(initial_dark);
   let search_ctx = expect_context::<SearchContext>();
-  let navigate = leptos_router::hooks::use_navigate();
+  let query_params = leptos_router::hooks::use_query_map();
+  Effect::new(move || {
+    search_ctx
+      .query
+      .set(query_params.read().get("q").unwrap_or_default());
+    search_ctx.current_page.set(1);
+  });
 
   // Apply initial theme on mount
   #[cfg(target_arch = "wasm32")]
@@ -158,16 +164,15 @@ fn SiteHeader() -> impl IntoView {
         </div>
 
         <div class="nav-right">
-          <div class="search-container">
+          <form class="search-container" action="/" method="get">
             <input
               type="text"
+              name="q"
               placeholder="Search..."
               class="search-input"
               on:input=move |ev| {
                 search_ctx.query.set(event_target_value(&ev));
                 search_ctx.current_page.set(1);
-                // Navigate to home page when searching from other pages
-                navigate("/", Default::default());
               }
               prop:value=move || search_ctx.query.get()
             />
@@ -175,7 +180,7 @@ fn SiteHeader() -> impl IntoView {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-          </div>
+          </form>
 
           <button class="theme-toggle" on:click=toggle_theme aria-label="Toggle theme">
             <svg
@@ -741,6 +746,7 @@ fn TagPage() -> impl IntoView {
       let current_tag = tag();
       let page_title = format!("Posts tagged with '{}' - AbletonPilot Blog", current_tag);
       let description = format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag);
+      let tag_url = format!("{SITE_URL}/tags/{current_tag}");
 
       view! {
         <Title text=page_title/>
@@ -749,10 +755,12 @@ fn TagPage() -> impl IntoView {
         <Meta property="og:type" content="website"/>
         <Meta property="og:title" content=format!("Posts tagged with '{}'", current_tag)/>
         <Meta property="og:description" content=format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag)/>
+        <Meta property="og:url" content=tag_url.clone()/>
         <Meta property="og:site_name" content="AbletonPilot Blog"/>
         <Meta name="twitter:card" content="summary"/>
         <Meta name="twitter:title" content=format!("Posts tagged with '{}'", current_tag)/>
         <Meta name="twitter:description" content=format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag)/>
+        <link rel="canonical" href=tag_url/>
       }
     }}
 

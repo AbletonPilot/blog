@@ -142,6 +142,23 @@ mod tests {
     }
   }
 
+  fn post(slug: &str, date: &str) -> Post {
+    Post {
+      slug: slug.to_string(),
+      metadata: PostMetadata {
+        title: slug.to_string(),
+        date: date.to_string(),
+        display_date: date.to_string(),
+        display_datetime: date.to_string(),
+        tags: Vec::new(),
+        description: String::new(),
+      },
+      content: String::new(),
+      preview: String::new(),
+      thumbnail: None,
+    }
+  }
+
   #[test]
   fn static_post_slugs_preserve_post_order() {
     let posts = vec![summary("newer", &["rust"]), summary("older", &["linux"])];
@@ -157,6 +174,25 @@ mod tests {
     ];
 
     assert_eq!(post_tags(&posts), vec!["ai", "linux", "rust"]);
+  }
+
+  #[test]
+  fn equal_date_posts_are_sorted_by_slug() {
+    let mut posts = vec![
+      post("zulu", "2026-08-28"),
+      post("alpha", "2026-08-28"),
+      post("older", "2026-08-27"),
+    ];
+
+    sort_posts(&mut posts);
+
+    assert_eq!(
+      posts
+        .iter()
+        .map(|post| post.slug.as_str())
+        .collect::<Vec<_>>(),
+      vec!["alpha", "zulu", "older"]
+    );
   }
 }
 
@@ -325,6 +361,16 @@ fn markdown_to_html(markdown: &str) -> String {
 }
 
 #[cfg(feature = "ssr")]
+fn sort_posts(posts: &mut [Post]) {
+  posts.sort_by(|a, b| {
+    b.metadata
+      .date
+      .cmp(&a.metadata.date)
+      .then_with(|| a.slug.cmp(&b.slug))
+  });
+}
+
+#[cfg(feature = "ssr")]
 pub fn load_posts() -> Vec<Post> {
   use std::fs;
   use std::path::Path;
@@ -369,7 +415,7 @@ pub fn load_posts() -> Vec<Post> {
     }
   }
 
-  posts.sort_by(|a, b| b.metadata.date.cmp(&a.metadata.date));
+  sort_posts(&mut posts);
 
   // Cache the posts
   if let Ok(mut cache) = POSTS_CACHE.lock() {

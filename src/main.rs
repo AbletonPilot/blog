@@ -21,6 +21,40 @@ fn write_static_metadata(
 }
 
 #[cfg(feature = "ssr")]
+fn validate_static_output(
+  site_root: &std::path::Path,
+  posts: &[blog::posts::Post],
+) -> std::io::Result<()> {
+  use std::{collections::BTreeSet, io, path::Path};
+
+  for post in posts {
+    let relative = Path::new("posts").join(format!("{}.html", post.slug));
+    if !site_root.join(&relative).is_file() {
+      return Err(io::Error::new(
+        io::ErrorKind::NotFound,
+        format!("missing static output: {}", relative.display()),
+      ));
+    }
+  }
+
+  let tags: BTreeSet<_> = posts
+    .iter()
+    .flat_map(|post| post.metadata.tags.iter())
+    .collect();
+  for tag in tags {
+    let relative = Path::new("tags").join(format!("{tag}.html"));
+    if !site_root.join(&relative).is_file() {
+      return Err(io::Error::new(
+        io::ErrorKind::NotFound,
+        format!("missing static output: {}", relative.display()),
+      ));
+    }
+  }
+
+  Ok(())
+}
+
+#[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
   use axum::{
@@ -48,12 +82,10 @@ async fn main() {
 
   if std::env::var_os("LEPTOS_SSG_ONLY").is_some() {
     let posts = load_posts();
-    write_static_metadata(
-      std::path::Path::new(leptos_options.site_root.as_ref()),
-      &posts,
-      blog::SITE_URL,
-    )
-    .expect("failed to write static metadata");
+    let site_root = std::path::Path::new(leptos_options.site_root.as_ref());
+    validate_static_output(site_root, &posts).expect("incomplete static output");
+    write_static_metadata(site_root, &posts, blog::SITE_URL)
+      .expect("failed to write static metadata");
     return;
   }
 
@@ -148,10 +180,28 @@ pub fn main() {
 #[cfg(all(test, feature = "ssr"))]
 mod tests {
   use super::*;
+  use blog::posts::{Post, PostMetadata};
   use std::{
     fs,
     time::{SystemTime, UNIX_EPOCH},
   };
+
+  fn post(slug: &str, tags: &[&str]) -> Post {
+    Post {
+      slug: slug.to_string(),
+      metadata: PostMetadata {
+        title: slug.to_string(),
+        date: "2026-08-28".to_string(),
+        display_date: "2026-08-28".to_string(),
+        display_datetime: "2026-08-28".to_string(),
+        tags: tags.iter().map(|tag| (*tag).to_string()).collect(),
+        description: String::new(),
+      },
+      content: String::new(),
+      preview: String::new(),
+      thumbnail: None,
+    }
+  }
 
   #[test]
   fn writes_static_metadata_files() {
@@ -172,6 +222,32 @@ mod tests {
     assert!(fs::read_to_string(root.join("robots.txt"))
       .unwrap()
       .contains("https://example.com/sitemap.xml"));
+
+    fs::remove_dir_all(root).unwrap();
+  }
+
+  #[test]
+  fn static_output_validation_checks_every_post_and_tag() {
+    let nonce = SystemTime::now()
+      .duration_since(UNIX_EPOCH)
+      .unwrap()
+      .as_nanos();
+    let root = std::env::temp_dir().join(format!("blog-static-routes-{nonce}"));
+    let posts = vec![post("one", &["rust"]), post("two", &["rust", "linux"])];
+    fs::create_dir_all(root.join("posts")).unwrap();
+    fs::create_dir_all(root.join("tags")).unwrap();
+    fs::write(root.join("posts/one.html"), "").unwrap();
+
+    let missing_post = validate_static_output(&root, &posts).unwrap_err();
+    assert!(missing_post.to_string().contains("posts/two.html"));
+
+    fs::write(root.join("posts/two.html"), "").unwrap();
+    fs::write(root.join("tags/rust.html"), "").unwrap();
+    let missing_tag = validate_static_output(&root, &posts).unwrap_err();
+    assert!(missing_tag.to_string().contains("tags/linux.html"));
+
+    fs::write(root.join("tags/linux.html"), "").unwrap();
+    validate_static_output(&root, &posts).unwrap();
 
     fs::remove_dir_all(root).unwrap();
   }
