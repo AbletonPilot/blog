@@ -1,0 +1,79 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.90.0
+          targets: wasm32-unknown-unknown
+          components: rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-leptos
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf \
+            https://github.com/leptos-rs/cargo-leptos/releases/download/v0.2.47/cargo-leptos-installer.sh | sh
+
+      - name: Validate public variables
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          test -n "$SITE_URL" || { echo "::error::SITE_URL is not configured"; exit 1; }
+          test -n "$PAGES_PROJECT" || { echo "::error::CLOUDFLARE_PAGES_PROJECT is not configured"; exit 1; }
+          case "$SITE_URL" in
+            https://*|http://*) ;;
+            *) echo "::error::SITE_URL must start with http:// or https://"; exit 1 ;;
+          esac
+          case "$SITE_URL" in
+            */) echo "::error::SITE_URL must not end with /"; exit 1 ;;
+          esac
+
+      - name: Format check
+        run: cargo fmt --check
+
+      - name: Test
+        run: cargo test --features ssr
+
+      - name: Build
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: cargo leptos build --release
+
+      - name: Generate static site
+        env:
+          LEPTOS_SSG_ONLY: "1"
+        run: ./target/release/blog
+
+      - name: Verify output
+        run: |
+          test -f target/site/index.html
+          test -f target/site/archive.html
+          test -f target/site/about.html
+          test -n "$(find target/site/posts -maxdepth 1 -name '*.html' -print -quit)"
+          test -n "$(find target/site/tags -maxdepth 1 -name '*.html' -print -quit)"
+          test -f target/site/rss.xml
+          test -f target/site/sitemap.xml
+          test -f target/site/robots.txt
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy target/site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
