@@ -31,7 +31,7 @@ fn extract_text_preview(markdown: &str, max_chars: usize) -> String {
   let mut result = String::new();
   let mut in_code_block = false;
   let mut chars_count = 0;
-  
+
   for line in markdown.lines() {
     // Skip code blocks
     if line.trim().starts_with("```") {
@@ -41,18 +41,18 @@ fn extract_text_preview(markdown: &str, max_chars: usize) -> String {
     if in_code_block {
       continue;
     }
-    
+
     // Skip images
     if line.trim().starts_with("!") && line.contains("](") {
       continue;
     }
-    
+
     // Skip empty lines
     let trimmed = line.trim();
     if trimmed.is_empty() {
       continue;
     }
-    
+
     // Remove markdown formatting
     let clean_line = trimmed
       .trim_start_matches(|c| c == '#' || c == ' ')
@@ -60,19 +60,19 @@ fn extract_text_preview(markdown: &str, max_chars: usize) -> String {
       .replace("*", "")
       .replace("__", "")
       .replace("_", "");
-    
+
     // Add to result
     if !result.is_empty() {
       result.push(' ');
     }
     result.push_str(&clean_line);
-    
+
     chars_count = result.chars().count();
     if chars_count >= max_chars {
       break;
     }
   }
-  
+
   // Truncate to max_chars
   if chars_count > max_chars {
     result.chars().take(max_chars).collect::<String>() + "..."
@@ -98,7 +98,7 @@ pub struct Post {
   pub slug: String,
   pub metadata: PostMetadata,
   pub content: String,
-  pub preview: String, // Text preview from content for SEO
+  pub preview: String,           // Text preview from content for SEO
   pub thumbnail: Option<String>, // First image URL for thumbnails
 }
 
@@ -191,10 +191,10 @@ impl Post {
     };
 
     let html_content = markdown_to_html(&content);
-    
+
     // Extract preview text from markdown content (max 160 chars for SEO)
     let preview = extract_text_preview(&content, 160);
-    
+
     // Extract first image URL for thumbnail
     let thumbnail = extract_thumbnail(&content);
 
@@ -269,7 +269,7 @@ fn markdown_to_html(markdown: &str) -> String {
             r#"<pre style="background-color:"#,
             r#"<pre class="code-light" style="padding:1rem;border-radius:8px;overflow-x:auto;background-color:"#,
           );
-          
+
           // Combine both versions
           let combined_html = format!("{}{}", dark_html, light_html);
           Some(Event::Html(combined_html.into()))
