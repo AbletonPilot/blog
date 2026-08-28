@@ -27,8 +27,8 @@ posts/*.md
     v
 GitHub Actions -- cargo leptos build -- Leptos static route generation
     |                                      |
-    |                                      +-- /posts/<slug>/index.html
-    |                                      +-- /tags/<tag>/index.html
+    |                                      +-- /posts/<slug>.html
+    |                                      +-- /tags/<tag>.html
     |                                      +-- rss.xml, sitemap.xml, robots.txt
     v
 target/site -- Wrangler Direct Upload --> Cloudflare Pages CDN
@@ -38,6 +38,10 @@ Visitors receive prebuilt HTML, CSS, JavaScript, and WASM. No Rust process runs
 for a request. WASM hydration retains search, pagination, theme controls, and
 Giscus. Internal navigation uses normal document loads so it never calls a
 missing server-function endpoint after deployment.
+
+Leptos writes non-trailing-slash routes as `.html` files. Cloudflare Pages
+serves matching HTML files at their extensionless route, so public URLs remain
+`/archive`, `/posts/<slug>`, and `/tags/<tag>`.
 
 ## Code Changes
 
