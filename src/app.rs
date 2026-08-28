@@ -1,5 +1,6 @@
 use crate::components::{AboutPage, ArchivePage, Giscus, PostSummaryCard};
 use crate::posts::{post_slugs, post_tags, Post, PostSummary};
+use crate::SITE_URL;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
 use leptos_router::{
@@ -145,14 +146,14 @@ fn SiteHeader() -> impl IntoView {
     <header class="site-header">
       <nav class="container">
         <div class="nav-brand">
-          <a href="/">"AbletonPilot"</a>
+          <a href="/" rel="external">"AbletonPilot"</a>
         </div>
 
         // Desktop navigation
         <div class="nav-left desktop-nav">
           <ul class="nav-links">
-            <li><a href="/archive">"Archive"</a></li>
-            <li><a href="/about">"About"</a></li>
+            <li><a href="/archive" rel="external">"Archive"</a></li>
+            <li><a href="/about" rel="external">"About"</a></li>
           </ul>
         </div>
 
@@ -228,8 +229,8 @@ fn SiteHeader() -> impl IntoView {
         // Mobile menu
         <div class=move || format!("mobile-menu {}", if menu_open.get() { "open" } else { "" })>
           <ul class="mobile-nav-links">
-            <li><a href="/archive" on:click=move |_| set_menu_open.set(false)>"Archive"</a></li>
-            <li><a href="/about" on:click=move |_| set_menu_open.set(false)>"About"</a></li>
+            <li><a href="/archive" rel="external" on:click=move |_| set_menu_open.set(false)>"Archive"</a></li>
+            <li><a href="/about" rel="external" on:click=move |_| set_menu_open.set(false)>"About"</a></li>
           </ul>
         </div>
       </nav>
@@ -359,7 +360,6 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         </script>
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-        <link rel="dns-prefetch" href="https://abletonpilot.onrender.com"/>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
         <link rel="alternate" type="application/rss+xml" title="AbletonPilot RSS Feed" href="/rss.xml"/>
         <AutoReload options=options.clone() />
@@ -487,7 +487,7 @@ fn HomePage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="AbletonPilot Blog"/>
     <Meta property="og:description" content="A blog about programming, technology, and software development"/>
-    <Meta property="og:url" content="https://abletonpilot.onrender.com/"/>
+    <Meta property="og:url" content=SITE_URL/>
     <Meta property="og:site_name" content="AbletonPilot Blog"/>
     <Meta property="og:locale" content="en_US"/>
     <Meta name="twitter:card" content="summary"/>
@@ -495,7 +495,7 @@ fn HomePage() -> impl IntoView {
     <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
     <Meta name="twitter:site" content="@AbletonPilot"/>
     <Meta name="application-name" content="AbletonPilot Blog"/>
-    <link rel="canonical" href="https://abletonpilot.onrender.com/"/>
+    <link rel="canonical" href=SITE_URL/>
 
 
     <div class="container">
@@ -610,7 +610,8 @@ fn PostPage() -> impl IntoView {
                 let description = post.metadata.description.clone();
                 let preview = post.preview.clone();
                 let page_title = format!("{} | AbletonPilot", title);
-                let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
+                let post_url = format!("{SITE_URL}/posts/{}", post.slug);
+                let about_url = format!("{SITE_URL}/about");
 
                 // Combine description and preview for better SEO
                 let full_description = if description.is_empty() {
@@ -632,12 +633,12 @@ fn PostPage() -> impl IntoView {
                     "author": {{
                       "@type": "Person",
                       "name": "AbletonPilot",
-                      "url": "https://abletonpilot.onrender.com/about"
+                      "url": "{}"
                     }},
                     "publisher": {{
                       "@type": "Organization",
                       "name": "AbletonPilot",
-                      "url": "https://abletonpilot.onrender.com"
+                      "url": "{}"
                     }},
                     "mainEntityOfPage": {{
                       "@type": "WebPage",
@@ -648,7 +649,9 @@ fn PostPage() -> impl IntoView {
                   title.replace('"', "\\\""),
                   description.replace('"', "\\\""),
                   date,
-                  og_url,
+                  about_url,
+                  SITE_URL,
+                  post_url,
                   tags.join(", ")
                 );
 
@@ -661,7 +664,7 @@ fn PostPage() -> impl IntoView {
                   <Meta property="og:type" content="article"/>
                   <Meta property="og:title" content=title.clone()/>
                   <Meta property="og:description" content=full_description.clone()/>
-                  <Meta property="og:url" content=og_url.clone()/>
+                  <Meta property="og:url" content=post_url.clone()/>
                   <Meta property="og:site_name" content="AbletonPilot"/>
                   <Meta property="og:locale" content="en_US"/>
                   <Meta property="article:published_time" content=date.clone()/>
@@ -670,9 +673,9 @@ fn PostPage() -> impl IntoView {
                   <Meta name="twitter:card" content="summary_large_image"/>
                   <Meta name="twitter:title" content=title.clone()/>
                   <Meta name="twitter:description" content=full_description.clone()/>
-                  <Meta name="twitter:url" content=og_url.clone()/>
+                  <Meta name="twitter:url" content=post_url.clone()/>
                   <Meta name="twitter:site" content="@AbletonPilot"/>
-                  <link rel="canonical" href=og_url.clone()/>
+                  <link rel="canonical" href=post_url.clone()/>
                   <Meta name="robots" content="index, follow"/>
 
                   <article class="post-detail">
@@ -686,14 +689,14 @@ fn PostPage() -> impl IntoView {
                             let tag_text = tag.clone();
                             let tag_link = tag.clone();
                             view! {
-                              <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
+                              <a href=format!("/tags/{}", tag_link) class="tag" rel="external">{tag_text}</a>
                             }
                           }).collect_view()}
                         </span>
                       </div>
                     </header>
                     <div class="post-content" inner_html=content></div>
-                    <a href="/" class="back-link">"← Back to posts"</a>
+                    <a href="/" class="back-link" rel="external">"← Back to posts"</a>
 
                     // Comments section
                     <div class="comments-section">
@@ -710,7 +713,7 @@ fn PostPage() -> impl IntoView {
                 <div class="not-found">
                   <h1>"Post Not Found"</h1>
                   <p>"The post you are looking for does not exist."</p>
-                  <a href="/">"← Back to posts"</a>
+                  <a href="/" rel="external">"← Back to posts"</a>
                 </div>
               }.into_any(),
             }
@@ -756,7 +759,7 @@ fn TagPage() -> impl IntoView {
     <div class="container">
       <header class="tag-header">
         <h1>"Posts tagged with: " {move || tag()}</h1>
-        <a href="/" class="back-link">"← All posts"</a>
+        <a href="/" class="back-link" rel="external">"← All posts"</a>
       </header>
 
       <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>

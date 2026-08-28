@@ -1,4 +1,5 @@
 use crate::posts::PostSummary;
+use crate::SITE_URL;
 use leptos::prelude::*;
 use leptos_meta::{Meta, Title};
 use std::collections::BTreeMap;
@@ -10,6 +11,7 @@ pub async fn get_posts_for_archive() -> Result<Vec<PostSummary>, ServerFnError> 
 
 #[component]
 pub fn ArchivePage() -> impl IntoView {
+  let archive_url = format!("{SITE_URL}/archive");
   let posts = Resource::new(
     || (),
     |_| async move { get_posts_for_archive().await.unwrap_or_default() },
@@ -22,12 +24,12 @@ pub fn ArchivePage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="Archive - AbletonPilot Blog"/>
     <Meta property="og:description" content="Browse all blog posts organized by date"/>
-    <Meta property="og:url" content="https://abletonpilot.onrender.com/archive"/>
+    <Meta property="og:url" content=archive_url.clone()/>
     <Meta property="og:site_name" content="AbletonPilot Blog"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="Archive - AbletonPilot Blog"/>
     <Meta name="twitter:description" content="Archive of all blog posts organized by year"/>
-    <link rel="canonical" href="https://abletonpilot.onrender.com/archive"/>
+    <link rel="canonical" href=archive_url/>
 
     <div class="container">
       <div class="archive-page">
@@ -68,7 +70,7 @@ pub fn ArchivePage() -> impl IntoView {
                                   <span class="month">{month}</span>
                                 </div>
                                 <div class="post-info">
-                                  <h3><a href=format!("/posts/{}", post.slug)>{post.metadata.title}</a></h3>
+                                  <h3><a href=format!("/posts/{}", post.slug) rel="external">{post.metadata.title}</a></h3>
                                   <p class="post-description">{post.metadata.description}</p>
                                 </div>
                               </article>
@@ -84,7 +86,7 @@ pub fn ArchivePage() -> impl IntoView {
           }}
         </Suspense>
 
-        <a href="/" class="back-link">"← Back to posts"</a>
+        <a href="/" class="back-link" rel="external">"← Back to posts"</a>
       </div>
     </div>
   }
