@@ -11,6 +11,7 @@ async fn main() {
   use blog::posts::load_posts;
   use blog::rss::generate_rss;
   use blog::sitemap::{generate_robots_txt, generate_sitemap};
+  use blog::SITE_URL;
   use leptos::logging::log;
   use leptos::prelude::*;
   use leptos_axum::{generate_route_list, LeptosRoutes};
@@ -49,7 +50,7 @@ async fn main() {
   // RSS handler
   async fn rss_handler() -> Response {
     let posts = load_posts();
-    let rss_content = generate_rss(&posts);
+    let rss_content = generate_rss(&posts, SITE_URL);
     (
       StatusCode::OK,
       [(header::CONTENT_TYPE, "application/rss+xml; charset=utf-8")],
@@ -61,7 +62,7 @@ async fn main() {
   // Sitemap handler
   async fn sitemap_handler() -> Response {
     let posts = load_posts();
-    let sitemap_content = generate_sitemap(&posts);
+    let sitemap_content = generate_sitemap(&posts, SITE_URL);
     (
       StatusCode::OK,
       [(header::CONTENT_TYPE, "application/xml; charset=utf-8")],
@@ -72,7 +73,7 @@ async fn main() {
 
   // Robots.txt handler
   async fn robots_handler() -> Response {
-    let robots_content = generate_robots_txt();
+    let robots_content = generate_robots_txt(SITE_URL);
     (
       StatusCode::OK,
       [(header::CONTENT_TYPE, "text/plain; charset=utf-8")],
