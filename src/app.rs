@@ -1,10 +1,12 @@
 use crate::components::{AboutPage, ArchivePage, Giscus, PostSummaryCard};
-use crate::posts::{Post, PostSummary};
+use crate::posts::{post_slugs, post_tags, Post, PostSummary};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
 use leptos_router::{
-  components::{Route, Router, Routes},
-  path, StaticSegment,
+  components::{FlatRoutes, Route, Router},
+  path,
+  static_routes::{StaticParamsMap, StaticRoute},
+  SsrMode,
 };
 
 // Global search context
@@ -393,25 +395,77 @@ pub fn App() -> impl IntoView {
       <Title text="AbletonPilot Blog"/>
       <SiteHeader/>
       <main>
-        <Routes fallback=|| view! {
+        <FlatRoutes fallback=|| view! {
           <div class="container">
             <div class="not-found">
               <h1>"404"</h1>
               <p>"Page not found."</p>
-              <a href="/">"← Back to home"</a>
+              <a href="/" rel="external">"← Back to home"</a>
             </div>
           </div>
         }.into_view()>
-          <Route path=StaticSegment("") view=HomePage/>
-          <Route path=StaticSegment("archive") view=ArchivePage/>
-          <Route path=StaticSegment("about") view=AboutPage/>
-          <Route path=path!("/posts/:slug") view=PostPage/>
-          <Route path=path!("/tags/:tag") view=TagPage/>
-        </Routes>
+          <Route
+            path=path!("/")
+            view=HomePage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/archive")
+            view=ArchivePage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/about")
+            view=AboutPage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/posts/:slug")
+            view=PostPage
+            ssr=SsrMode::Static(StaticRoute::new().prerender_params(|| async {
+              let posts = get_post_summaries().await.unwrap_or_default();
+              [("slug".to_string(), post_slugs(&posts))]
+                .into_iter()
+                .collect::<StaticParamsMap>()
+            }))
+          />
+          <Route
+            path=path!("/tags/:tag")
+            view=TagPage
+            ssr=SsrMode::Static(StaticRoute::new().prerender_params(|| async {
+              let posts = get_post_summaries().await.unwrap_or_default();
+              [("tag".to_string(), post_tags(&posts))]
+                .into_iter()
+                .collect::<StaticParamsMap>()
+            }))
+          />
+        </FlatRoutes>
       </main>
       <SiteFooter/>
       <CookieConsent/>
     </Router>
+  }
+}
+
+#[cfg(all(test, feature = "ssr"))]
+mod tests {
+  use super::*;
+  use leptos::config::get_configuration;
+  use leptos_axum::generate_route_list_with_ssg;
+  use leptos_router::SsrMode;
+
+  #[test]
+  fn all_public_routes_are_static() {
+    let options = get_configuration(None).unwrap().leptos_options;
+    let (routes, _) = generate_route_list_with_ssg({
+      let options = options.clone();
+      move || shell(options.clone())
+    });
+
+    assert_eq!(routes.len(), 5);
+    assert!(routes
+      .iter()
+      .all(|route| matches!(route.mode(), SsrMode::Static(_))));
   }
 }
 
