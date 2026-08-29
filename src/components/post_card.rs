@@ -15,13 +15,13 @@ pub fn PostSummaryCard(post: PostSummary) -> impl IntoView {
     <article class=move || if has_thumbnail { "post-card has-thumbnail" } else { "post-card" }>
       {thumbnail.map(|thumb_url| view! {
         <div class="post-thumbnail">
-          <a href=format!("/posts/{}", slug.clone())>
+          <a href=format!("/posts/{}", slug.clone()) rel="external">
             <img src=thumb_url alt=title.clone() loading="lazy"/>
           </a>
         </div>
       })}
       <div class="post-content">
-        <h2><a href=format!("/posts/{}", slug)>{title}</a></h2>
+        <h2><a href=format!("/posts/{}", slug) rel="external">{title}</a></h2>
         <div class="post-meta">
           <span class="date">{display_date}</span>
           <span class="tags">
@@ -29,7 +29,7 @@ pub fn PostSummaryCard(post: PostSummary) -> impl IntoView {
               let tag_text = tag.clone();
               let tag_link = tag.clone();
               view! {
-                <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
+                <a href=format!("/tags/{}", tag_link) class="tag" rel="external">{tag_text}</a>
               }
             }).collect_view()}
           </span>

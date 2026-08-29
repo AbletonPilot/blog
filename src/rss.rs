@@ -1,15 +1,15 @@
 use crate::posts::Post;
 
-pub fn generate_rss(posts: &[Post]) -> String {
-  let mut rss = String::from(
+pub fn generate_rss(posts: &[Post], site_url: &str) -> String {
+  let mut rss = format!(
     r#"<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>AbletonPilot</title>
-    <link>https://abletonpilot.onrender.com</link>
+    <link>{site_url}</link>
     <description>A blog about programming, technology, and software development</description>
     <language>en-us</language>
-    <atom:link href="https://abletonpilot.onrender.com/rss.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="{site_url}/rss.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 13 Oct 2025 00:00:00 GMT</lastBuildDate>
     <generator>Leptos RSS Generator</generator>
 "#,
@@ -19,7 +19,7 @@ pub fn generate_rss(posts: &[Post]) -> String {
   for post in posts.iter().take(20) {
     // Limit to most recent 20 posts
     let pub_date = format_rfc2822_date(&post.metadata.date);
-    let post_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
+    let post_url = format!("{site_url}/posts/{}", post.slug);
 
     rss.push_str(&format!(
       r#"    <item>
@@ -51,5 +51,18 @@ fn format_rfc2822_date(date_str: &str) -> String {
     "2025-10-13" => "Sun, 13 Oct 2025 00:00:00 GMT".to_string(),
     "2025-10-12" => "Sat, 12 Oct 2025 00:00:00 GMT".to_string(),
     _ => format!("{} 00:00:00 GMT", date_str), // Fallback
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn rss_uses_the_configured_site_url() {
+    let rss = generate_rss(&[], "https://example.com");
+
+    assert!(rss.contains("<link>https://example.com</link>"));
+    assert!(rss.contains("href=\"https://example.com/rss.xml\""));
   }
 }

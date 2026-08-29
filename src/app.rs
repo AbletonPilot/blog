@@ -1,10 +1,13 @@
 use crate::components::{AboutPage, ArchivePage, Giscus, PostSummaryCard};
-use crate::posts::{Post, PostSummary};
+use crate::posts::{post_slugs, post_tags, Post, PostSummary};
+use crate::SITE_URL;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
 use leptos_router::{
-  components::{Route, Router, Routes},
-  path, StaticSegment,
+  components::{FlatRoutes, Route, Router},
+  path,
+  static_routes::{StaticParamsMap, StaticRoute},
+  SsrMode,
 };
 
 // Global search context
@@ -85,7 +88,13 @@ fn SiteHeader() -> impl IntoView {
 
   let is_dark = RwSignal::new(initial_dark);
   let search_ctx = expect_context::<SearchContext>();
-  let navigate = leptos_router::hooks::use_navigate();
+  let query_params = leptos_router::hooks::use_query_map();
+  Effect::new(move || {
+    search_ctx
+      .query
+      .set(query_params.read().get("q").unwrap_or_default());
+    search_ctx.current_page.set(1);
+  });
 
   // Apply initial theme on mount
   #[cfg(target_arch = "wasm32")]
@@ -143,28 +152,27 @@ fn SiteHeader() -> impl IntoView {
     <header class="site-header">
       <nav class="container">
         <div class="nav-brand">
-          <a href="/">"AbletonPilot"</a>
+          <a href="/" rel="external">"AbletonPilot"</a>
         </div>
 
         // Desktop navigation
         <div class="nav-left desktop-nav">
           <ul class="nav-links">
-            <li><a href="/archive">"Archive"</a></li>
-            <li><a href="/about">"About"</a></li>
+            <li><a href="/archive" rel="external">"Archive"</a></li>
+            <li><a href="/about" rel="external">"About"</a></li>
           </ul>
         </div>
 
         <div class="nav-right">
-          <div class="search-container">
+          <form class="search-container" action="/" method="get">
             <input
               type="text"
+              name="q"
               placeholder="Search..."
               class="search-input"
               on:input=move |ev| {
                 search_ctx.query.set(event_target_value(&ev));
                 search_ctx.current_page.set(1);
-                // Navigate to home page when searching from other pages
-                navigate("/", Default::default());
               }
               prop:value=move || search_ctx.query.get()
             />
@@ -172,7 +180,7 @@ fn SiteHeader() -> impl IntoView {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-          </div>
+          </form>
 
           <button class="theme-toggle" on:click=toggle_theme aria-label="Toggle theme">
             <svg
@@ -226,8 +234,8 @@ fn SiteHeader() -> impl IntoView {
         // Mobile menu
         <div class=move || format!("mobile-menu {}", if menu_open.get() { "open" } else { "" })>
           <ul class="mobile-nav-links">
-            <li><a href="/archive" on:click=move |_| set_menu_open.set(false)>"Archive"</a></li>
-            <li><a href="/about" on:click=move |_| set_menu_open.set(false)>"About"</a></li>
+            <li><a href="/archive" rel="external" on:click=move |_| set_menu_open.set(false)>"Archive"</a></li>
+            <li><a href="/about" rel="external" on:click=move |_| set_menu_open.set(false)>"About"</a></li>
           </ul>
         </div>
       </nav>
@@ -357,7 +365,6 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         </script>
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-        <link rel="dns-prefetch" href="https://abletonpilot.onrender.com"/>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
         <link rel="alternate" type="application/rss+xml" title="AbletonPilot RSS Feed" href="/rss.xml"/>
         <AutoReload options=options.clone() />
@@ -393,25 +400,77 @@ pub fn App() -> impl IntoView {
       <Title text="AbletonPilot Blog"/>
       <SiteHeader/>
       <main>
-        <Routes fallback=|| view! {
+        <FlatRoutes fallback=|| view! {
           <div class="container">
             <div class="not-found">
               <h1>"404"</h1>
               <p>"Page not found."</p>
-              <a href="/">"← Back to home"</a>
+              <a href="/" rel="external">"← Back to home"</a>
             </div>
           </div>
         }.into_view()>
-          <Route path=StaticSegment("") view=HomePage/>
-          <Route path=StaticSegment("archive") view=ArchivePage/>
-          <Route path=StaticSegment("about") view=AboutPage/>
-          <Route path=path!("/posts/:slug") view=PostPage/>
-          <Route path=path!("/tags/:tag") view=TagPage/>
-        </Routes>
+          <Route
+            path=path!("/")
+            view=HomePage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/archive")
+            view=ArchivePage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/about")
+            view=AboutPage
+            ssr=SsrMode::Static(StaticRoute::new())
+          />
+          <Route
+            path=path!("/posts/:slug")
+            view=PostPage
+            ssr=SsrMode::Static(StaticRoute::new().prerender_params(|| async {
+              let posts = get_post_summaries().await.unwrap_or_default();
+              [("slug".to_string(), post_slugs(&posts))]
+                .into_iter()
+                .collect::<StaticParamsMap>()
+            }))
+          />
+          <Route
+            path=path!("/tags/:tag")
+            view=TagPage
+            ssr=SsrMode::Static(StaticRoute::new().prerender_params(|| async {
+              let posts = get_post_summaries().await.unwrap_or_default();
+              [("tag".to_string(), post_tags(&posts))]
+                .into_iter()
+                .collect::<StaticParamsMap>()
+            }))
+          />
+        </FlatRoutes>
       </main>
       <SiteFooter/>
       <CookieConsent/>
     </Router>
+  }
+}
+
+#[cfg(all(test, feature = "ssr"))]
+mod tests {
+  use super::*;
+  use leptos::config::get_configuration;
+  use leptos_axum::generate_route_list_with_ssg;
+  use leptos_router::SsrMode;
+
+  #[test]
+  fn all_public_routes_are_static() {
+    let options = get_configuration(None).unwrap().leptos_options;
+    let (routes, _) = generate_route_list_with_ssg({
+      let options = options.clone();
+      move || shell(options.clone())
+    });
+
+    assert_eq!(routes.len(), 5);
+    assert!(routes
+      .iter()
+      .all(|route| matches!(route.mode(), SsrMode::Static(_))));
   }
 }
 
@@ -433,7 +492,7 @@ fn HomePage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="AbletonPilot Blog"/>
     <Meta property="og:description" content="A blog about programming, technology, and software development"/>
-    <Meta property="og:url" content="https://abletonpilot.onrender.com/"/>
+    <Meta property="og:url" content=SITE_URL/>
     <Meta property="og:site_name" content="AbletonPilot Blog"/>
     <Meta property="og:locale" content="en_US"/>
     <Meta name="twitter:card" content="summary"/>
@@ -441,7 +500,7 @@ fn HomePage() -> impl IntoView {
     <Meta name="twitter:description" content="A blog about programming, technology, and software development"/>
     <Meta name="twitter:site" content="@AbletonPilot"/>
     <Meta name="application-name" content="AbletonPilot Blog"/>
-    <link rel="canonical" href="https://abletonpilot.onrender.com/"/>
+    <link rel="canonical" href=SITE_URL/>
 
 
     <div class="container">
@@ -556,7 +615,8 @@ fn PostPage() -> impl IntoView {
                 let description = post.metadata.description.clone();
                 let preview = post.preview.clone();
                 let page_title = format!("{} | AbletonPilot", title);
-                let og_url = format!("https://abletonpilot.onrender.com/posts/{}", post.slug);
+                let post_url = format!("{SITE_URL}/posts/{}", post.slug);
+                let about_url = format!("{SITE_URL}/about");
 
                 // Combine description and preview for better SEO
                 let full_description = if description.is_empty() {
@@ -578,12 +638,12 @@ fn PostPage() -> impl IntoView {
                     "author": {{
                       "@type": "Person",
                       "name": "AbletonPilot",
-                      "url": "https://abletonpilot.onrender.com/about"
+                      "url": "{}"
                     }},
                     "publisher": {{
                       "@type": "Organization",
                       "name": "AbletonPilot",
-                      "url": "https://abletonpilot.onrender.com"
+                      "url": "{}"
                     }},
                     "mainEntityOfPage": {{
                       "@type": "WebPage",
@@ -594,7 +654,9 @@ fn PostPage() -> impl IntoView {
                   title.replace('"', "\\\""),
                   description.replace('"', "\\\""),
                   date,
-                  og_url,
+                  about_url,
+                  SITE_URL,
+                  post_url,
                   tags.join(", ")
                 );
 
@@ -607,7 +669,7 @@ fn PostPage() -> impl IntoView {
                   <Meta property="og:type" content="article"/>
                   <Meta property="og:title" content=title.clone()/>
                   <Meta property="og:description" content=full_description.clone()/>
-                  <Meta property="og:url" content=og_url.clone()/>
+                  <Meta property="og:url" content=post_url.clone()/>
                   <Meta property="og:site_name" content="AbletonPilot"/>
                   <Meta property="og:locale" content="en_US"/>
                   <Meta property="article:published_time" content=date.clone()/>
@@ -616,9 +678,9 @@ fn PostPage() -> impl IntoView {
                   <Meta name="twitter:card" content="summary_large_image"/>
                   <Meta name="twitter:title" content=title.clone()/>
                   <Meta name="twitter:description" content=full_description.clone()/>
-                  <Meta name="twitter:url" content=og_url.clone()/>
+                  <Meta name="twitter:url" content=post_url.clone()/>
                   <Meta name="twitter:site" content="@AbletonPilot"/>
-                  <link rel="canonical" href=og_url.clone()/>
+                  <link rel="canonical" href=post_url.clone()/>
                   <Meta name="robots" content="index, follow"/>
 
                   <article class="post-detail">
@@ -632,14 +694,14 @@ fn PostPage() -> impl IntoView {
                             let tag_text = tag.clone();
                             let tag_link = tag.clone();
                             view! {
-                              <a href=format!("/tags/{}", tag_link) class="tag">{tag_text}</a>
+                              <a href=format!("/tags/{}", tag_link) class="tag" rel="external">{tag_text}</a>
                             }
                           }).collect_view()}
                         </span>
                       </div>
                     </header>
                     <div class="post-content" inner_html=content></div>
-                    <a href="/" class="back-link">"← Back to posts"</a>
+                    <a href="/" class="back-link" rel="external">"← Back to posts"</a>
 
                     // Comments section
                     <div class="comments-section">
@@ -656,7 +718,7 @@ fn PostPage() -> impl IntoView {
                 <div class="not-found">
                   <h1>"Post Not Found"</h1>
                   <p>"The post you are looking for does not exist."</p>
-                  <a href="/">"← Back to posts"</a>
+                  <a href="/" rel="external">"← Back to posts"</a>
                 </div>
               }.into_any(),
             }
@@ -684,6 +746,7 @@ fn TagPage() -> impl IntoView {
       let current_tag = tag();
       let page_title = format!("Posts tagged with '{}' - AbletonPilot Blog", current_tag);
       let description = format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag);
+      let tag_url = format!("{SITE_URL}/tags/{current_tag}");
 
       view! {
         <Title text=page_title/>
@@ -692,17 +755,19 @@ fn TagPage() -> impl IntoView {
         <Meta property="og:type" content="website"/>
         <Meta property="og:title" content=format!("Posts tagged with '{}'", current_tag)/>
         <Meta property="og:description" content=format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag)/>
+        <Meta property="og:url" content=tag_url.clone()/>
         <Meta property="og:site_name" content="AbletonPilot Blog"/>
         <Meta name="twitter:card" content="summary"/>
         <Meta name="twitter:title" content=format!("Posts tagged with '{}'", current_tag)/>
         <Meta name="twitter:description" content=format!("All blog posts tagged with '{}' on AbletonPilot Blog", current_tag)/>
+        <link rel="canonical" href=tag_url/>
       }
     }}
 
     <div class="container">
       <header class="tag-header">
         <h1>"Posts tagged with: " {move || tag()}</h1>
-        <a href="/" class="back-link">"← All posts"</a>
+        <a href="/" class="back-link" rel="external">"← All posts"</a>
       </header>
 
       <Suspense fallback=move || view! { <p>"Loading posts..."</p> }>

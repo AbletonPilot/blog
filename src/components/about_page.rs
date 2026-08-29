@@ -1,8 +1,10 @@
+use crate::SITE_URL;
 use leptos::prelude::*;
 use leptos_meta::{Meta, Title};
 
 #[component]
 pub fn AboutPage() -> impl IntoView {
+  let about_url = format!("{SITE_URL}/about");
   view! {
     <Title text="About - AbletonPilot Blog"/>
     <Meta name="description" content="About AbletonPilot, software developer and technology enthusiast"/>
@@ -10,12 +12,12 @@ pub fn AboutPage() -> impl IntoView {
     <Meta property="og:type" content="website"/>
     <Meta property="og:title" content="About - AbletonPilot Blog"/>
     <Meta property="og:description" content="About AbletonPilot, software developer and technology enthusiast"/>
-    <Meta property="og:url" content="https://abletonpilot.onrender.com/about"/>
+    <Meta property="og:url" content=about_url.clone()/>
     <Meta property="og:site_name" content="AbletonPilot Blog"/>
     <Meta name="twitter:card" content="summary"/>
     <Meta name="twitter:title" content="About - AbletonPilot Blog"/>
     <Meta name="twitter:description" content="About AbletonPilot, software developer and technology enthusiast"/>
-    <link rel="canonical" href="https://abletonpilot.onrender.com/about"/>
+    <link rel="canonical" href=about_url/>
 
     <div class="container">
       <article class="about-page">
@@ -81,7 +83,7 @@ pub fn AboutPage() -> impl IntoView {
           </section>
         </div>
 
-        <a href="/" class="back-link">"← Back to posts"</a>
+        <a href="/" class="back-link" rel="external">"← Back to posts"</a>
       </article>
     </div>
   }
